@@ -43,6 +43,14 @@ This project is about writing my ow HTTP server.
     - Grabs(attrape) the first connection request on the queue of pending connections (set up in listen) and creates a new socket for that connection.
     - Socket operations are **synchronous**, or **blocking**, and **accept** will block until a connection is present on the queue.
 
+* int select(int nfds, fd_set *restrict readfds, fd_set *restrict writefds, fd_set *restrict exceptfds, struct timeval *restrict timeout);
+
+    - allows a program to monitor multiple file descriptors,
+        waiting until one or more of the file descriptors become "ready"
+        for some class of I/O operation.
+    - select : to handle listen multiple socket
+                
+
 
 ## 4- Send and recieve msgs:
 * We finally have connected sockets between a client(when you visit IP address of your server from a web browser) and a server!
@@ -50,8 +58,32 @@ This project is about writing my ow HTTP server.
 
 ## 5- Close the socket:
 * with close(new_socket);
-  
-[//]: # (<< ------------------------------------------------------------------ >>)
 
-# New Field
+[//]: # (<< ---------------------------- SELECT ---------------------------------- >>)
+
+# Select:
+    - select : destructive, changes our FD set
+
+[//]: # (<< ---------------------------- CONFIG FILE ---------------------------------- >>)
+
+# Config File Structure and Contexts (like ngnix)
+
+* Context : areas that these brackets define;
+    - Ex:
+        context {
+            . . .
+            directives
+        }
+
+* Directives : server will error out on reading a configuration file with directives that are declared in the wrong context.
+
+* The Core contexts :
+    - The Main Context : context {}
+    - The Event Context : events {}
+    - HTTP context : http {} // In our case default is **http server**
+
+* Server context :
+    - Ex : 
+            
+
 
