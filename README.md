@@ -84,6 +84,16 @@ This project is about writing my ow HTTP server.
 
 * Server context :
     - Ex : 
+
+    http {
+        server { 
+        # first server context
+        }
+    }
+    
+    - server : virtual server ,handle a specific subset of connections.
+    - listen 80 0.0.0.0 : (directive) The ip address / port combination that this server block is designed to respond to
+    - server_names server1 server2 : 
             
 
 

@@ -103,12 +103,12 @@ int test(){
         {
            if (FD_ISSET(i, &ready_sockets))
            {
-               if (i == server1.getSocketFD()) // this is new connection
+               if (i == server1.getSocketFD()) // this is new connection from server 1
                {    
                     int client_socket = server1.acceptNewConnection();
                     FD_SET(client_socket, &current_sockets);
                }
-               else if (i == server2.getSocketFD()) // this is new connection
+               else if (i == server2.getSocketFD()) // this is new connection from server 2
                {    
                     int client_socket = server2.acceptNewConnection();
                     FD_SET(client_socket, &current_sockets);
