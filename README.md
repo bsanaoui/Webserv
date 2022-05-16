@@ -94,6 +94,12 @@ This project is about writing my ow HTTP server.
     - server : virtual server ,handle a specific subset of connections.
     - listen 80 0.0.0.0 : (directive) The ip address / port combination that this server block is designed to respond to
     - server_names server1 server2 : 
-            
+
+* The Location Context :
+     location / {
+            root /var/www/html;
+            . . .
+    }
+[//]: # (<< ---------------------------- ---------------------------------- >>)
 
 

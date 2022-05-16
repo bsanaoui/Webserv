@@ -78,7 +78,7 @@ class Server{
 
 };
 
-int test(){
+int run(){
 
 	Server server1(80, INADDR_ANY); // setup server 1
 	Server server2(8080, INADDR_ANY); // setup server 1
