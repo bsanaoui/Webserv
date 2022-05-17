@@ -3,12 +3,13 @@
 
 #include <iostream>
 
-enum  Type
+enum  TypeToken
 {
     WORD,
     OPEN_BRACKET,
     CLOSE_BRACKET,
     SEMICOLON,
+    TOKEN_ERR,
     TOKEN_EOF
 };
 
@@ -16,10 +17,11 @@ class Token
 {
     public:
         /* data */
-        Type type;
+        TypeToken type;
         std::string value;
 
-        Token(Type type, std::string value);
+        Token();
+        Token(TypeToken type, std::string value);
         Token(const Token& token);
         Token& operator=(const Token& token);
 };

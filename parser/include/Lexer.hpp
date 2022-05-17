@@ -13,6 +13,7 @@ class Lexer
 
         // Constructors
         Lexer(std::string contents);
+        Lexer();
         
         // Operations
         Lexer(const Lexer& lexer);

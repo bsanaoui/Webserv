@@ -8,6 +8,13 @@ Lexer::Lexer(std::string contents)
     this->c = contents[this->i];
 }
 
+Lexer::Lexer()
+{
+    this->contents = "";
+    this->i = 0;
+    this->c = contents[this->i];
+}
+
 // Operations
 Lexer::Lexer(const Lexer& lexer)
 {

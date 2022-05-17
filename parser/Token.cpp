@@ -1,6 +1,12 @@
 #include "include/Token.hpp"
 
-Token::Token(Type type, std::string value)
+Token::Token()
+{
+    this->type = TOKEN_EOF;
+    this->value = "\0";
+}
+
+Token::Token(TypeToken type, std::string value)
 {
     this->type = type;
     this->value = value;

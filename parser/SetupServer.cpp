@@ -5,11 +5,11 @@
 // --------------------------------------------------------- //
 ServerSetup::ServerSetup()
 {
-    this->listen = std::pair<int, std::string>(); 
+    this->listen = std::pair<short, u_int32_t> (); 
     this->server_name = std::vector<std::string>();
     this->root = std::string();
     this->index = std::vector<std::string>();
-    this->error_pages = std::vector<std::pair<int, std::string> >();
+    this->error_pages = std::vector<std::pair<short, std::string> >();
     this->client_max_body_size = int();
     this->request_method =  std::vector<std::string>();
     this->autoindex = std::string();
@@ -45,7 +45,7 @@ void ServerSetup::initLocation()
     this->location.path = std::string();
     this->location.root = std::string();
     this->location.index = std::vector<std::string>();
-    this->location.error_pages = std::vector<std::pair<int, std::string> >();
+    this->location.error_pages = std::vector<std::pair<short, std::string> >();
     this->location.client_max_body_size = int();
     this->location.request_method =  std::vector<std::string>();
     this->location.autoindex = std::string();

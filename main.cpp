@@ -4,7 +4,7 @@
 #include <sstream> //std::stringstream
 
 #include "Server.hpp"
-#include "parser/include/Lexer.hpp"
+#include "parser/include/Parser.hpp"
 
 
 std::string fileToSring(const char *file)
@@ -36,7 +36,14 @@ int main(int argc, char *argv[])
     while((token = lexer.getNextToken()).type != TOKEN_EOF)
         std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
 
+    // Parser parser(lexer);
+    // std::vector<ServerSetup> servers;
+    // servers = parser.parse();
+
+    // if (servers.size() > 0)
+    //     std::cout << servers[0].listen.first << std::endl;
     
+        
     // ------------------- test Server --------------//
     // run();
     return (0);

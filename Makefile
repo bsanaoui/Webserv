@@ -5,8 +5,9 @@ FLAGS = -Werror -Wextra -Wall  -std=c++98
 SRC =  	main.cpp \
 		parser/Token.cpp \
 		parser/Lexer.cpp \
-		parser/ServerSetup.cpp \
-		parser/Parser.cpp
+		parser/SetupServer.cpp \
+		parser/Parser.cpp \
+		parser/utils.cpp
 
 all : $(NAME)
 
