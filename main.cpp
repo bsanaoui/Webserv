@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
                 << " | Server name1: " << servers[i].server_name[0]
                 << " | Error pages: " <<  servers[i].error_pages[0].second
                 << " port: "<< servers[i].listen.first << std::endl;
+
+    std::cout << "Server: 0 | " << servers[0].locations[1].path << std::endl;
+    std::cout << "Server: 0 | " << servers[0].locations[1].error_pages[0].second << std::endl;
     
         
     // ------------------- test Server --------------//

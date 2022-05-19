@@ -21,15 +21,15 @@ class ServerSetup
 {
     public:
     //------ public member --------- >>
-    std::pair<short, u_int32_t>                 listen;                 // listen                80 0.0.0.0;
-    std::vector<std::string>                    server_name;            // server_name           server1 server2;
-    std::string                                 root;                   // root                  /var/www/example.com;
-    std::vector<std::string>                    index;                  // index                 index.html download.html;
-    std::vector<std::pair<short, std::string> > error_pages;            // error_page            404 505 /custom_404.html /custom_505.html ;
-    int                                         client_max_body_size;   // client_max_body_size  1024;
-    std::vector<std::string>                    request_method;         // request_method        GET POST;
-    std::string                                 autoindex;              // autoindex             off;
-    t_location                                  location;
+    std::pair<short, u_int32_t>                 listen;                 // listen               80 0.0.0.0;
+    std::vector<std::string>                    server_name;            // server_name          server1 server2;
+    std::string                                 root;                   // root                 /var/www/example.com;
+    std::vector<std::string>                    index;                  // index                index.html download.html;
+    std::vector<std::pair<short, std::string> > error_pages;            // error_page           404 505 /custom_404.html /custom_505.html ;
+    int                                         client_max_body_size;   // client_max_body_size 1024;
+    std::vector<std::string>                    request_method;         // request_method       GET POST;
+    std::string                                 autoindex;              // autoindex            off;
+    std::vector<t_location>                     locations;              // locations            location /upload {}
 
     // --------------------------------------------------------- //
     // --------------- Constructors and Operators -------------- //

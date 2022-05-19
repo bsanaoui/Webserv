@@ -84,7 +84,10 @@ ServerSetup                 Parser::parseServer()
         else if (!curr_token.value.compare("autoindex"))
             server_setup.autoindex = parseWord();
         else if (!curr_token.value.compare("location"))
-            server_setup.location = parseLocation();
+        {
+            server_setup.locations.push_back(parseLocation());
+            continue;
+        }
         else
             errorDisplay("Invalid Token");
         this->eat(SEMICOLON);
@@ -159,6 +162,28 @@ t_location                  Parser::parseLocation()
 {
     t_location location = ServerSetup::initLocation();
 
+    location.path = parseWord(); // path of location
+    this->eat(OPEN_BRACKET);
+    while (curr_token.type != CLOSE_BRACKET && curr_token.type != TOKEN_EOF
+            && curr_token.type != TOKEN_ERR)
+    {
+        if (!curr_token.value.compare("root"))
+            location.root = parseWord();
+        else if (!curr_token.value.compare("index"))
+            location.index = parseWords();
+        else if (!curr_token.value.compare("error_pages"))
+            location.error_pages = parseErrorPages();
+        else if (!curr_token.value.compare("client_max_body_size"))
+            location.client_max_body_size = stringToInt(parseWord());
+        else if (!curr_token.value.compare("request_method"))
+            location.request_method = parseWords();
+        else if (!curr_token.value.compare("autoindex"))
+            location.autoindex = parseWord();
+        else
+            errorDisplay("Invalid Token");
+        this->eat(SEMICOLON);
+    }
+    this->eat(CLOSE_BRACKET);
     return (location);
 }
 

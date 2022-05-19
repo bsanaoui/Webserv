@@ -13,7 +13,7 @@ ServerSetup::ServerSetup()
     this->client_max_body_size = int();
     this->request_method =  std::vector<std::string>();
     this->autoindex = std::string();
-    this->location = t_location();
+    this->locations = std::vector<t_location>();
 }
 
 ServerSetup::ServerSetup(const ServerSetup& server_setup)
@@ -31,7 +31,7 @@ ServerSetup&    ServerSetup::operator=(const ServerSetup& server_setup)
     this->client_max_body_size = server_setup.client_max_body_size;
     this->request_method = server_setup.request_method;
     this->autoindex = server_setup.autoindex;
-    this->location = server_setup.location;
+    this->locations = server_setup.locations;
     return (*this);
 }
 
