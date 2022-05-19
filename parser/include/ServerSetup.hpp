@@ -39,9 +39,9 @@ class ServerSetup
     ServerSetup&    operator=(const ServerSetup& server_setup);
 
     // --------------------------------------------------------- //
-    // ----------------- Member Methods ------------------------ //
+    // ----------------- Non Member Methods ------------------------ //
     // --------------------------------------------------------- //
-    void initLocation();
+    static t_location initLocation();
 
 };
 

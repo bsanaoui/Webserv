@@ -48,19 +48,12 @@ void    Parser::eat(TypeToken token_type)
 std::vector<ServerSetup>    Parser::parse() // error multi server
 {
     std::vector<ServerSetup> servers;
-    if (curr_token.value.compare("server")) // != "server"
-        errorDisplay("Invalid Context; support only server context");
-
-    this->eat(WORD); // server directive
+    this->eatServer(); // check if is server context and advance to next token
     servers.push_back(parseServer());
-    while (curr_token.type == CLOSE_BRACKET
-            && curr_token.type != TOKEN_EOF)
+
+    while (curr_token.type != TOKEN_EOF)
     {
-        this->eat(CLOSE_BRACKET); // server directive
-        std::cout << curr_token.value << std::endl;
-        if (curr_token.value.compare("server")) // != "server"
-            errorDisplay("Invalid Context; support only server context");
-        this->eat(WORD); // server directive
+        this->eatServer();
         servers.push_back(parseServer());
     }
     return (servers);
@@ -96,6 +89,7 @@ ServerSetup                 Parser::parseServer()
             errorDisplay("Invalid Token");
         this->eat(SEMICOLON);
     }
+    this->eat(CLOSE_BRACKET);
     return (server_setup);
 }
 
@@ -118,15 +112,19 @@ std::vector<std::string>    Parser::parseWords()
 
     this->eat(WORD); // direcvtive
     while (this->curr_token.type != SEMICOLON)
-        words.push_back(parseWord());
+    {
+        words.push_back(this->curr_token.value);
+        this->eat(WORD);
+    }
     return (words);
 }
 
 
 std::string                 Parser::parseWord()
 {
+    this->eat(WORD); // Directive
     std::string value = this->curr_token.value;
-    this->eat(WORD);
+    this->eat(WORD); // Value
     return (value);
 }
 
@@ -134,7 +132,7 @@ std::vector<std::pair<short, std::string> >   Parser::parseErrorPages()
 {
     std::vector<std::pair<short, std::string> > words;
     int                                         n_error_page = 0;
-    this->eat(WORD); // direcvtive
+    this->eat(WORD); // Directive "error_pages"
     
     while (this->curr_token.type != SEMICOLON && isNumber(curr_token.value)) 
     {
@@ -142,23 +140,34 @@ std::vector<std::pair<short, std::string> >   Parser::parseErrorPages()
         this->eat(WORD); // 404 ex:
     }
     if (!words.size())
-        errorDisplay("Bad parameter in error_pages directve");
+        errorDisplay(ERR_MSG_DIR_ERR_PAGES);
+    
     while (this->curr_token.type != SEMICOLON)
     {
         if (n_error_page > (int)words.size())
-            errorDisplay("Bad parameter in error_pages directve");
-        words[n_error_page].second =  curr_token.value; // add number error in first pair
+            errorDisplay(ERR_MSG_DIR_ERR_PAGES);
+        words[n_error_page].second =  curr_token.value; // add path error_page in second pair
         this->eat(WORD); // error_page_505.html ex:
         n_error_page++;
     }
     if (n_error_page != (int)words.size())
-        errorDisplay("Bad parameter in error_pages directve");
+        errorDisplay(ERR_MSG_DIR_ERR_PAGES);
     return (words);
 }
 
 t_location                  Parser::parseLocation()
 {
-    return (t_location());
+    t_location location = ServerSetup::initLocation();
+
+    return (location);
+}
+
+int                          Parser::eatServer()
+{
+    if (curr_token.value.compare("server")) // != "server"
+        errorDisplay(ERR_MSG_CONTEXT_SERVER);
+    this->eat(WORD); // server directive
+    return (0);
 }
 
 //-------------------------------- Non Member Methods ----------------------- //

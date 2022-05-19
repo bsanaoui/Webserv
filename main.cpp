@@ -32,16 +32,19 @@ int main(int argc, char *argv[])
     else
         contents = fileToSring(std::string("test.config").c_str());
     Lexer lexer(contents);
-    Token token(TOKEN_EOF, "\0");
-    while((token = lexer.getNextToken()).type != TOKEN_EOF)
-        std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
+    // Token token(TOKEN_EOF, "\0");
+    // while((token = lexer.getNextToken()).type != TOKEN_EOF)
+    //     std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
 
-    // Parser parser(lexer);
-    // std::vector<ServerSetup> servers;
-    // servers = parser.parse();
+    Parser parser(lexer);
+    std::vector<ServerSetup> servers;
+    servers = parser.parse();
 
-    // if (servers.size() > 0)
-    //     std::cout << servers[0].listen.first << std::endl;
+    for (int i = 0; i < (int)servers.size() ;i++)
+        std::cout << "Server: " << i
+                << " | Server name1: " << servers[i].server_name[0]
+                << " | Error pages: " <<  servers[i].error_pages[0].second
+                << " port: "<< servers[i].listen.first << std::endl;
     
         
     // ------------------- test Server --------------//

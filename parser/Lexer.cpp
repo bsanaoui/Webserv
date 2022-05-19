@@ -51,11 +51,11 @@ Token   Lexer::getNextToken()
 	{
 		if (this->c == ' ' || this->c == '\t' || this->c == '\n')
 			skipWhiteSpaces();
-		if (this->c == '{')
+		else if (this->c == '{')
 			return (advanceWithToken(Token(OPEN_BRACKET, "{")));
-		if (this->c == '}')
+		else if (this->c == '}')
 			return (advanceWithToken(Token(CLOSE_BRACKET, "}")));
-        if (this->c == ';')
+        else if (this->c == ';')
 			return (advanceWithToken(Token(SEMICOLON, ";")));
         else
             return (collectWord());

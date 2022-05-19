@@ -4,6 +4,13 @@
 #include "Lexer.hpp"
 #include "ServerSetup.hpp"
 
+
+// Define Errors Messages
+#define ERR_MSG_DIR_ERR_PAGES "Bad parameter in error_pages directve"
+#define ERR_MSG_CONTEXT_SERVER "Invalid Context; support only server context"
+
+
+// class Parser
 class Parser
 {
     public:
@@ -23,6 +30,7 @@ class Parser
     // ----------------- Member Methods ------------------------ //
     // --------------------------------------------------------- //
     void                                        eat(TypeToken token_type);
+    int                                         eatServer();
     std::vector<ServerSetup>                    parse();
     ServerSetup                                 parseServer();
     std::pair<short, u_int32_t>                 parseListen();
