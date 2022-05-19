@@ -3,11 +3,11 @@ NAME = webserv
 CC = clang++
 FLAGS = -Werror -Wextra -Wall  -std=c++98
 SRC =  	main.cpp \
-		parser/Token.cpp \
-		parser/Lexer.cpp \
-		parser/SetupServer.cpp \
-		parser/Parser.cpp \
-		parser/utils.cpp
+		parser_config/Token.cpp \
+		parser_config/Lexer.cpp \
+		parser_config/SetupServer.cpp \
+		parser_config/Parser.cpp \
+		parser_config/utils.cpp
 
 all : $(NAME)
 

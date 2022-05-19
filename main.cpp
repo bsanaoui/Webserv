@@ -4,7 +4,7 @@
 #include <sstream> //std::stringstream
 
 #include "Server.hpp"
-#include "parser/include/Parser.hpp"
+#include "parser_config/include/Parser.hpp"
 
 
 std::string fileToSring(const char *file)
@@ -20,37 +20,46 @@ std::string fileToSring(const char *file)
     return(str);
 }
 
-int main(int argc, char *argv[])
+std::vector<ServerSetup> parseConfig(int argc, char **argv)
 {
-    (void)argc;
-
-
-    // ------------------- test Parsing --------------//
     std::string contents;
     if (argc == 2)
         contents = fileToSring(argv[1]);
     else
         contents = fileToSring(std::string("test.config").c_str());
-    Lexer lexer(contents);
+     Lexer lexer(contents);
     // Token token(TOKEN_EOF, "\0");
     // while((token = lexer.getNextToken()).type != TOKEN_EOF)
     //     std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
 
     Parser parser(lexer);
-    std::vector<ServerSetup> servers;
-    servers = parser.parse();
+    std::vector<ServerSetup> servers; 
+    return (parser.parse());
+}
 
-    for (int i = 0; i < (int)servers.size() ;i++)
-        std::cout << "Server: " << i
-                << " | Server name1: " << servers[i].server_name[0]
-                << " | Error pages: " <<  servers[i].error_pages[0].second
-                << " port: "<< servers[i].listen.first << std::endl;
+int main(int argc, char *argv[])
+{
 
-    std::cout << "Server: 0 | " << servers[0].locations[1].path << std::endl;
-    std::cout << "Server: 0 | " << servers[0].locations[1].error_pages[0].second << std::endl;
-    
+    // ------------------- Parsing Config File ------------------- //
+
+    std::vector<ServerSetup> servers = parseConfig(argc, argv);
+
+    // --------------------- Test Parsing ------------------------ //
+
+    // for (int i = 0; i < (int)servers.size() ;i++)
+    //     std::cout << "Server: " << i
+    //             << " | Server name1: " << servers[i].server_name[0]
+    //             << " | Error pages: " <<  servers[i].error_pages[0].second
+    //             << " port: "<< servers[i].listen.first << std::endl;
+
+    // std::cout << "Server: 0 | " << servers[0].locations[1].path << std::endl;
+    // std::cout << "Server: 0 | " << servers[0].locations[1].error_pages[0].second << std::endl;
         
-    // ------------------- test Server --------------//
+    // --------------------- Run Server --------------------------- //
+
     // run();
+
+    // ------------------------------------------------------------- //
+
     return (0);
 }

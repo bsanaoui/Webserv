@@ -14,7 +14,7 @@
 class Parser
 {
     public:
-    //------ public member --------- >>
+    //------ public member ------------------------------------- //
     Lexer   lexer;
     Token   curr_token;
     Token   prev_token;
