@@ -7,7 +7,10 @@ SRC =  	main.cpp \
 		parser_config/Lexer.cpp \
 		parser_config/SetupServer.cpp \
 		parser_config/Parser.cpp \
-		parser_config/utils.cpp
+		utils/utils.cpp \
+		parser_request/RequestInfo.cpp \
+		parser_request/LexerRe.cpp \
+		parser_request/ParserRe.cpp 
 
 all : $(NAME)
 

@@ -3,6 +3,9 @@
 #include <netinet/in.h> // sockaddr_in
 #include <unistd.h> //read, write
 
+#include "parser_request/include/ParserRe.hpp"
+#include "parser_request/include/RequestInfo.hpp"
+
 
 class Server{
 
@@ -64,18 +67,31 @@ class Server{
 
 		long valread;
 
-	
+        // Revieve the request from client
 		valread = read(client_socket, request, 1024);
-
         if(valread < 0)
             std::cout << "No bytes are there to read" << std::endl;
 		std::cout << request << std::endl;
 
+        // ---------------------- Parsing The Request ------------------------------ //
+        LexerRe lexer(request);
+        ParserRe parser(lexer);
+        RequestInfo request_info =  parser.parse();
+        // ---------------------- Test Request Parser ------------------------- //
+
+        std::cout << request_info.getHTTP_version() << " | " << request_info.getRequest_target() << std::endl;
+        // LexerRe lexer(request);
+        // Token token(TOKEN_EOF, "\0");
+        // while((token = lexer.getNextToken()).type != TOKEN_EOF)
+        //     std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
+
+        // ------------------------------------------------------------------- //
+
+        // Send Response to the client
 		write(client_socket, response, strlen(response));
         std::cout << "\n+++++++ Hello message sent ++++++++\n" << std::endl;
 		close(client_socket);
 	}
-
 };
 
 int run(){

@@ -1,0 +1,11 @@
+GET https://developer.com HTTP/1.1
+Content-Type: text/plain
+User-Agent: PostmanRuntime/7.29.0
+Accept: */*
+Postman-Token: 1e0014ac-bf8c-4ffd-b3d7-4c18faaa73f5
+Host: localhost:80
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Content-Length: 17
+
+Hello From Client

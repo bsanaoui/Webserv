@@ -1,5 +1,5 @@
 #include "include/Parser.hpp"
-#include "include/utils.hpp" // StringtoInt(), isNumber
+#include "../include/utils.hpp" // StringtoInt(), isNumber
 #include <arpa/inet.h>  // inet_addr
 
 // --------------------------------------------------------- //
@@ -103,9 +103,11 @@ std::pair<short, u_int32_t> Parser::parseListen()
     this->eat(WORD); // listen
     this->eat(WORD); // port
     listen.first =  stringToInt(prev_token.value);
-    this->eat(WORD); // ip  
-    listen.second = inet_addr(prev_token.value.c_str());
-
+    this->eat(WORD); // ip 
+    if (prev_token.value == "0.0.0.0" || prev_token.value == "127.0.0.1")
+        listen.second = inet_addr(prev_token.value.c_str());
+    else
+        errorDisplay(prev_token.value + ": IP address listening to is not a valid ip interface!");
     return (listen);
 }
 
