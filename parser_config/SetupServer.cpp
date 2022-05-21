@@ -35,6 +35,54 @@ ServerSetup&    ServerSetup::operator=(const ServerSetup& server_setup)
     return (*this);
 }
 
+// --------------------------------------------------------- //
+// -------------------- Getters  --------------------------- //
+// --------------------------------------------------------- //
+std::pair<short, u_int32_t>                 ServerSetup::getListen() const
+{
+    return (this->listen);
+}
+
+std::vector<std::string>                    ServerSetup::getServer_name() const
+{
+    return (this->server_name);
+}
+
+std::string                                 ServerSetup::getRoot() const
+{
+    return (this->root);
+}
+
+std::vector<std::string>                    ServerSetup::getIndex() const
+{
+    return (this->index);
+}
+
+std::vector<std::pair<short, std::string> > ServerSetup::getError_pages() const
+{
+    return (this->error_pages);
+}
+
+int                                         ServerSetup::getClient_max_body_size() const
+{
+    return (this->client_max_body_size);
+}
+
+std::vector<std::string>                    ServerSetup::getRequest_method() const
+{
+    return (this->request_method);
+}  
+
+std::string                                 ServerSetup::getAutoindex() const
+{
+    return (this->autoindex);
+}  
+
+std::vector<t_location>                     ServerSetup::getLocations() const
+{
+    return (this->locations);
+} 
+
 
 
 // --------------------------------------------------------- //

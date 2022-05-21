@@ -46,14 +46,14 @@ int main(int argc, char *argv[])
 
     // --------------------- Test Parsing ------------------------ //
 
-    // for (int i = 0; i < (int)servers.size() ;i++)
-    //     std::cout << "Server: " << i
-    //             << " | Server name1: " << servers[i].server_name[0]
-    //             << " | Error pages: " <<  servers[i].error_pages[0].second
-    //             << " port: "<< servers[i].listen.first << std::endl;
+    for (int i = 0; i < (int)servers.size() ;i++)
+        std::cout << "Server: " << i
+                << " | Server name1: " << servers[i].getServer_name()[0]
+                << " | Error pages: " <<  servers[i].getError_pages()[0].second
+                << " port: "<< servers[i].getListen().first << std::endl;
 
-    // std::cout << "Server: 0 | " << servers[0].locations[1].path << std::endl;
-    // std::cout << "Server: 0 | " << servers[0].locations[1].error_pages[0].second << std::endl;
+    std::cout << "Server: 0 | " << servers[0].getLocations()[1].path << std::endl;
+    std::cout << "Server: 0 | " << servers[0].getLocations()[1].error_pages[0].second << std::endl;
         
     // --------------------- Run Server --------------------------- //
 

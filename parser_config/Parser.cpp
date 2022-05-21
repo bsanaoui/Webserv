@@ -99,11 +99,11 @@ ServerSetup                 Parser::parseServer()
 std::pair<short, u_int32_t> Parser::parseListen()
 {
    std::pair<short, u_int32_t>  listen;
-
+   
     this->eat(WORD); // listen
     this->eat(WORD); // port
     listen.first =  stringToInt(prev_token.value);
-    this->eat(WORD); // ip
+    this->eat(WORD); // ip  
     listen.second = inet_addr(prev_token.value.c_str());
 
     return (listen);
