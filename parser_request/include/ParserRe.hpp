@@ -13,7 +13,7 @@ class ParserRe
 {
     public:
     //------ public member ------------------------------------- //
-    LexerRe   lexer;
+    LexerRe lexer;
     Token   curr_token;
     Token   prev_token;
 
@@ -30,7 +30,6 @@ class ParserRe
     void                                        eat(TypeToken token_type);
     RequestInfo                                 parse();
     std::pair<std::string, std::string>         parseHeader();
-    // std::string                              parseStartLine();
 
     // --------------------------------------------------------- //
     // -------------- Non Member Functions --------------------- //

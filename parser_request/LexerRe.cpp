@@ -6,6 +6,9 @@ LexerRe::LexerRe(std::string contents)
     this->contents = contents;
     this->i = 0;
     this->c = contents[this->i];
+
+    this->n_word = 0;
+    this->is_key = 1;
 }
 
 LexerRe::LexerRe()
@@ -13,6 +16,12 @@ LexerRe::LexerRe()
     this->contents = "";
     this->i = 0;
     this->c = contents[this->i];
+}
+
+LexerRe::~LexerRe()
+{
+    this->n_word = 0;
+    this->is_key = 1;
 }
 
 // Operations
@@ -26,6 +35,8 @@ LexerRe& LexerRe::operator=(const LexerRe& lexer)
     this->contents = lexer.contents;
     this->c = lexer.c;
     this->i = lexer.i;
+    this->is_key = lexer.is_key;
+    this->n_word = lexer.n_word;
     return (*this);
 }
 
@@ -64,12 +75,11 @@ Token   LexerRe::getNextToken()
 Token   LexerRe::collectWord()
 {
     std::string value;
-    static int n_word = 0; // if first line parse it the 3 words reset to 0 again
-    static int is_key = 1;
+  
     
-    if (n_word < 3) // first line 3 param
+    if (this->n_word < 3) // first line 3 param
     {
-        n_word++;
+        this->n_word++;
         while(isWord(this->c))
         {
             value.push_back(this->c);
@@ -77,17 +87,17 @@ Token   LexerRe::collectWord()
         }
         return (Token(WORD, value));
     }
-    while(c != ' ' && c != '\r' && c != '\n' && c != '\0' && c != '\t')
+    while(c != '\r' && c != '\n' && c != '\0')
     {
-        if (is_key == 1 && c == ':')
+        if (this->is_key == 1 && c == ':')
             break;
         value.push_back(this->c);
         advance();
     }
-    if (is_key == 1)
-        is_key = 0;
+    if (this->is_key == 1)
+        this->is_key = 0;
     else
-        is_key = 1;
+        this->is_key = 1;
     return (Token(WORD, value));
 }
 

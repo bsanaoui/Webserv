@@ -79,7 +79,8 @@ class Server{
         RequestInfo request_info =  parser.parse();
         // ---------------------- Test Request Parser ------------------------- //
 
-        std::cout << request_info.getHTTP_version() << " | " << request_info.getRequest_target() << std::endl;
+        // std::cout << request_info.getHTTP_version() << " | " << request_info.getRequest_target() << std::endl;
+        
         // LexerRe lexer(request);
         // Token token(TOKEN_EOF, "\0");
         // while((token = lexer.getNextToken()).type != TOKEN_EOF)
