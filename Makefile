@@ -10,7 +10,8 @@ SRC =  	main.cpp \
 		utils/utils.cpp \
 		parser_request/RequestInfo.cpp \
 		parser_request/LexerRe.cpp \
-		parser_request/ParserRe.cpp 
+		parser_request/ParserRe.cpp \
+		response/Response.cpp
 
 all : $(NAME)
 

@@ -5,6 +5,7 @@
 
 #include "parser_request/include/ParserRe.hpp"
 #include "parser_request/include/RequestInfo.hpp"
+#include "response/Response.hpp"
 
 
 class Server{
@@ -62,8 +63,14 @@ class Server{
 
 	static void handleConnection(int client_socket){
 
-		char response[100] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+		// char response[100] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+        Response resp;
+        char *response = (char *)resp.handleResponse().c_str();
+        std::cout << "++++++++++++ Response +++++++++++++" << std::endl;
+        std::cout << response << std::endl;
+        std::cout << "++++++++++++++--------+++++++++++++" << std::endl;
         char request[30000] = {0};
+
 
 		long valread;
 
