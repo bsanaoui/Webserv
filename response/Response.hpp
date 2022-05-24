@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 
+#include "../parser_config/include/ServerSetup.hpp"
+#include "../parser_request/include/RequestInfo.hpp"
 
 class Response
 {
@@ -20,14 +22,14 @@ public:
     Response(std::string status);
     ~Response();
 
-    void    append_header(std::string fst, std::string scd);
-	int     Get_body_size();
+    std::string     handleResponse(RequestInfo request_info, ServerSetup server_setup);
+    void            append_header(std::string fst, std::string scd);
+	int             Get_body_size();
 
-	void    make_body_status();
-	void    make_body_status(std::string url);
-	std::string  make_header();
-	std::string  serialize();
-    std::string  handleResponse();
+	void            make_body_status();
+	void            make_body_status(std::string url);
+	std::string     make_header();
+	std::string     serialize();
 };
 
 #endif // !RESPONSE_HPP

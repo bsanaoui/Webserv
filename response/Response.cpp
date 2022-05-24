@@ -69,16 +69,62 @@ std::string Response::serialize(){
     
 }
 
-std::string Response::handleResponse(){
-
+std::string  Response::handleResponse(RequestInfo request_info, ServerSetup server_setup){
+    //  code_status = "200";
     // std::ofstream Myfile("ResponseFile.txt");
-    code_status = "200";
     // append_header("Host", "127.0.0.1:8000");
     // make_header();
     // make_body_status();
-    _body = "Hello world!";
-
+    // _body = "Hello world!";
     // Myfile << Resp.serialize();
     // Myfile.close();
-    return(serialize());
+    // return(serialize());
+
+    // verify any method (GET POST DELETE)
+
+    // Verifiez extention of file if exist
+    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+
+    // verifier root && the file if exist
+
+    // calculate Lenght of the file;
+    
+    // verify any method (GET POST DELETE)
+    if (request_info.getRequest_method() == "GET")
+    {   
+        std::string path;
+        // if root
+        if (request_info.getRequest_target() == "/about")
+            path = server_setup.getRoot() + "/" + server_setup.getLocations()[0].index[0];
+        else // if location
+            path = server_setup.getRoot() + "/" + server_setup.getIndex().at(0);
+        
+        std::ifstream index_file(path);
+
+        if (!index_file.is_open())
+            return (0);
+    
+        std::cout << "\n\n/<< ****************** Index Content : ********************* >>"<< std:: endl;
+        std::string response_line;
+        std::string body;
+        int         size_body = 0;
+        while (std::getline(index_file, response_line))
+        {
+            // std::istringstream iss(response_line);
+            // int a, b;
+            // if (!(iss >> a >> b)) { break; } // error
+            body.append(response_line);
+            size_body += response_line.length();
+            if (!index_file.eof())
+            {
+                body.append("\n");
+                size_body++;
+            }
+        }
+        response.append(std::to_string(size_body));
+        response.append("\r\n\r\n");
+        response.append(body);
+    }
+    return (response);
+
 }

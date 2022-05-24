@@ -1,5 +1,5 @@
 #include "include/Parser.hpp"
-#include "../include/utils.hpp" // StringtoInt(), isNumber
+#include "../include/Utils.hpp" // StringtoInt(), isNumber
 #include <arpa/inet.h>  // inet_addr
 
 // --------------------------------------------------------- //
