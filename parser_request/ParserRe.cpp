@@ -4,13 +4,13 @@
 // --------------- Constructors and Operators -------------- //
 // --------------------------------------------------------- //
 
-ParserRe::ParserRe(LexerRe lexer) : lexer(lexer)
-{
+ParserRe::ParserRe(LexerRe lexer) : lexer(lexer) , _is_bad_req(false)
+{   
     this->curr_token = this->lexer.getNextToken();
     this->prev_token = this->curr_token;
 }
 
-ParserRe::ParserRe(const ParserRe& parser)
+ParserRe::ParserRe(const ParserRe& parser) : _is_bad_req(false)
 {
     *this = parser;
 }
@@ -20,6 +20,7 @@ ParserRe&    ParserRe::operator=(const ParserRe& parser)
     this->lexer = parser.lexer;
     this->curr_token = parser.curr_token;
     this->prev_token = parser.prev_token;
+    this->_is_bad_req = parser._is_bad_req;
     return (*this);
 }
 
@@ -30,17 +31,14 @@ ParserRe&    ParserRe::operator=(const ParserRe& parser)
 
 void    ParserRe::eat(TypeToken token_type)
 {
-    if (this->curr_token.type == token_type)
+    if (this->curr_token.type != token_type)
 	{
-		this->prev_token = this->curr_token;
-		this->curr_token = this->lexer.getNextToken();
-	}
-	else
-	{
+        this->_is_bad_req = true;
 		std::cerr  << "Unexepected token '" << this->curr_token.value
                 << "', with type " << this->curr_token.type << std::endl;
-		exit(EXIT_FAILURE);
-	}
+    }
+    this->prev_token = this->curr_token;
+	this->curr_token = this->lexer.getNextToken();
 }
  
 RequestInfo    ParserRe::parse() // error multi server
@@ -54,10 +52,11 @@ RequestInfo    ParserRe::parse() // error multi server
     requestInfo._request_target = prev_token.value;
     this->eat(WORD);
     requestInfo._HTTP_version = prev_token.value;
-
+    
     while (curr_token.type != TOKEN_BODY)
         requestInfo._headers.insert(parseHeader());
     requestInfo._body = curr_token.value;
+    requestInfo._is_bad_req = this->_is_bad_req;
     return (requestInfo);
 }
 

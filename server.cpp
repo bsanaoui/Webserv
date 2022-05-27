@@ -89,11 +89,12 @@ void	Server::handleConnection(ServerSetup server_setup, int new_socket)
 	std::cout << std::endl << request << "\n" <<std::endl;
 
 	// ----------------------- Handle Response ----------------------------- //
-	Response resp;
-	response = resp.handleResponse(request_info, server_setup);
+	Response resp(new_socket, request_info, server_setup);
+	response = resp.test(request_info, server_setup);
 
 	// ----------------------- Send Response To client --------------------- //
 	send(new_socket, response.c_str(), response.length(), 0);
 	std::cout << "\n++++++++++ message sent ++++++++++++\n" << std::endl;
+	
 	close(new_socket);
 }

@@ -1,101 +1,146 @@
 #include "Response.hpp"
 
-Response::Response(){
+// --------------------------------------------------------- //
+// --------------- Constructors and Operators -------------- //
+// --------------------------------------------------------- //
 
+Response::Response(int fd_sock_req, RequestInfo request_info, ServerSetup server_setup) 
+    : _server_setup(server_setup), _request_info(request_info), _fd_sock_req(fd_sock_req), _type_req_target(IS_LOCATION)
+{
+    this->_fd_sock_req = fd_sock_req;
+    // PUT Location info in server_info; if not found Error and send it 
+    if (request_info.getRequest_target() != "/")
+    {
+        t_location *location;
+
+        if (request_info.isBadRequest())
+        {   
+            std::cout << "Create ERROR(Bad Request) Response And Send it to the client" << std::endl; 
+            this->_is_error = true;
+            return ;
+        }
+        if (request_info.getRequest_target() != "/"
+            && !(location = this->_server_setup.getLocation(request_info.getRequest_target(), &_type_req_target)))
+        {
+            if (this->_type_req_target == IS_NOT_FOUND)
+            {
+                std::cout << "Create ERROR(Not Found File/Location) Response And Send it to the client" << std::endl;
+                this->_is_error = true;
+                return ;
+            }
+        }
+        InitResponseConfig(location);
+    }
+    this->_response_file.open(RESPONSE_FILE_NAME, std::ios::out); // Open File
+    if (!_response_file.is_open())
+            std::cout << "Create ERROR(File not opened) Response And Send it to the client" << std::endl;
 }
 
-Response::Response(std::string status){
-    code_status = status.substr(0, 3);
-    phrase_status = status.substr(4);
+
+Response::~Response() // Memory Leaks if exist
+{
+    this->_response_file.close();
+    std::remove(RESPONSE_FILE_NAME);
 }
 
-Response::~Response(){
+// --------------------------------------------------------- //
+// --------------------  Member Methods -------------------- //
+// --------------------------------------------------------- //
 
+void            Response::InitResponseConfig(t_location *location)
+{
+    if (location->root.length())
+        _server_setup.root += location->root;
+    if (!location->index.empty())
+        _server_setup.index = location->index;
+    if (!location->error_pages.empty())
+        _server_setup.error_pages = location->error_pages;
+    if (location->client_max_body_size != -1)
+        _server_setup.client_max_body_size = location->client_max_body_size;
+    if (!location->request_method.empty())
+        _server_setup.request_method = location->request_method;
+    if (location->autoindex.length())
+         _server_setup.autoindex = location->autoindex;
 }
 
-void Response::append_header(std::string fst, std::string scd){
-    _headers.insert(std::make_pair(fst, scd));
+std::pair<std::string, std::string>    Response::getErrorPage(int& status_code) // (pair(path, msg))
+{
+    // Check in the config file;
+    std::vector<std::pair<short, std::string> > v = _server_setup.getError_pages();
+    for(int i = 0; i < (int)v.size(); i++)
+        if (v[i].first == status_code)
+            return (std::make_pair(_server_setup.getRoot() + v[i].second, "OK"));
+    if (status_code == 404)
+        return (std::make_pair(ERROR_PAGE_404, "Page_Not_Found"));
+    else if (status_code == 500)
+        return (std::make_pair(ERROR_PAGE_500, "KO"));
+    else if (status_code == 400)
+        return (std::make_pair(ERROR_PAGE_400, "KO"));
+    return (std::make_pair(ERROR_PAGE_404, "KO")); // default
 }
 
-int Response::Get_body_size(){
-    return(_body.size());
+
+void               Response::appendStartLine(int& status_code, const std::string& msg)
+{
+    this->_response_file << "HTTP/1.1 ";
+    this->_response_file << status_code;
+    this->_response_file << " " + msg;
+    this->_response_file << "\r\n";
 }
 
-std::string Response::make_header(){
-    std::string rst;
-    //"HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!
-    rst.append("HTTP/1.1" + code_status + " OK" + "\r\n" + "Content-Type: text/html\r\n");
-    for (std::map<std::string, std::string>::iterator itr = _headers.begin(); itr != _headers.end(); itr++)
-        rst.append((*itr).first + ": " + (*itr).second + "\r\n");
-    rst.append("\r\n");
-    return (rst);
+void                Response::appendContentType(const std::string& path)
+{
+    this->_response_file << "Content-Type: ";
+    this->_response_file << "text/html";  (void)path ;//content-type = function(path)
+    this->_response_file << "\r\n";
 }
 
-void Response::make_body_status(){
-	
-    _body.clear();
-    
-    std::string rst;
-
-    rst.append("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"/><title>WebServ</title></head>");
-	rst.append("<body>");
-	rst.append("<h1>" + code_status + "</h1>");
-	rst.append("<h3>" + phrase_status + "</h3>");
-    //if return to home oplig decomment the line buttom
-	// rst.append("<p>Click <a href=\"/\">here</a> to return home.</p>");
-	rst.append("</body></html>");
-	
-	_body = rst;
+void                Response::appendContentLength(const std::string& path)
+{
+    this->_response_file << "Content-Length: ";
+    this->_response_file << "10000";  (void)path; //size_file = function(path) 
+    this->_response_file << "\r\n";
 }
 
-void Response::make_body_status(std::string url){
-    _body.clear();
-    std::string rst;
+void                Response::appendBody(const std::string& path)
+{
+    std::ifstream   in_file(path);
+    std::string     tmp_line;
 
-    rst.append(url);
-    _body = rst;
+    if (!in_file.is_open())
+            return ;
+    this->_response_file << "\r\n";
+
+    while (std::getline(in_file, tmp_line))
+    {
+        this->_response_file << tmp_line;
+        if (!in_file.eof())
+            this->_response_file << "\n";
+    }
+    if (in_file.is_open())
+        in_file.close();
 }
+// --------------------------------------------------------- //
+// ------------------  Non Member Functions ---------------- //
+// --------------------------------------------------------- //
 
-std::string Response::serialize(){
-    std::string rst;
 
-    rst.append("HTTP/1.1 " + code_status + " OK" + "\n" + "Content-Type: text/plain\n" + "Content-Length: 1\n");
-    for (std::map<std::string, std::string>::iterator itr = _headers.begin(); itr != _headers.end(); itr++)
-        rst.append((*itr).first + ": " + (*itr).second + "\n");
-    rst.append("\n");
-    rst.append(_body);
 
-    return (rst);
-    
-}
+// ----------------------------- TEST !!!!! ---------------------------------------//
+// ----------------------------- TEST !!!!! ---------------------------------------//
+std::string  Response::test(RequestInfo request_info, ServerSetup server_setup){
 
-std::string  Response::handleResponse(RequestInfo request_info, ServerSetup server_setup){
-    //  code_status = "200";
-    // std::ofstream Myfile("ResponseFile.txt");
-    // append_header("Host", "127.0.0.1:8000");
-    // make_header();
-    // make_body_status();
-    // _body = "Hello world!";
-    // Myfile << Resp.serialize();
-    // Myfile.close();
-    // return(serialize());
-
-    // verify any method (GET POST DELETE)
-
+    //1 -  verify any method (GET POST DELETE) //     // and exist in config file
     // Verifiez extention of file if exist
     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
-
-    // verifier root && the file if exist
-
-    // calculate Lenght of the file;
-    
-    // verify any method (GET POST DELETE)
+    // Verifier root && the file if exist
+    // Calculate Lenght of the file;
     if (request_info.getRequest_method() == "GET")
     {   
         std::string path;
         // if root
         if (request_info.getRequest_target() == "/about")
-            path = server_setup.getRoot() + "/" + server_setup.getLocations()[0].index[0];
+            path = server_setup.getRoot() + server_setup.getLocations()[0].path + "/" + server_setup.getLocations()[0].index[0];
         else // if location
             path = server_setup.getRoot() + "/" + server_setup.getIndex().at(0);
         
@@ -124,7 +169,7 @@ std::string  Response::handleResponse(RequestInfo request_info, ServerSetup serv
         response.append(std::to_string(size_body));
         response.append("\r\n\r\n");
         response.append(body);
+        index_file.close();
     }
     return (response);
-
 }

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <map>
 
-
 class RequestInfo
 {
     friend class ParserRe;
@@ -15,6 +14,7 @@ class RequestInfo
     std::string                         _HTTP_version; // Ex: HTTP/1.1
     std::map<std::string, std::string>  _headers; // Ex: Connection: keep-alive
     std::string                         _body;
+    bool                                _is_bad_req;
 
     public:
     // --------------------------------------------------------- //
@@ -32,12 +32,12 @@ class RequestInfo
     std::string                         getRequest_target() const;
     std::string                         getHTTP_version() const;
     std::map<std::string, std::string>  getHeaders() const;
-    std::string                         getBody() const;
+    std::string                         getBody() const;                                
 
     // --------------------------------------------------------- //
-    // ----------------- Non Member Methods -------------------- //
+    // --------------------  Member Methods -------------------- //
     // --------------------------------------------------------- //
-    
+    bool                                isBadRequest() const;
 
 }; // class RequestInfo
 

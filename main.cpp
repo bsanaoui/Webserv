@@ -1,6 +1,7 @@
 #include "include/Utils.hpp"
 #include "include/Server.hpp"
 
+
 void   run(std::vector<ServerSetup> servers_setup)
 {
   std::vector<ServerSetup>::iterator it_b(servers_setup.begin());
@@ -62,7 +63,34 @@ std::vector<ServerSetup> parseConfig(int argc, char **argv)
     return (parser.parse());
 }
 
-int main(int argc, char **argv){
+
+void  CGIhandle(std::string php_file, char **envp)
+{
+  int p[2];
+  pid_t pid;
+
+
+  std::string path = "/usr/bin/php";
+  pipe(p);
+  pid = fork();
+  if (pid == 0)
+  {
+    // dup2(0, 0);
+	// close (1);
+	execl(path.c_str(), php_file.c_str(), envp);
+    close (0);
+    close (1);
+	return ;
+  }
+  else
+  {
+    waitpid(pid, NULL, 0);
+    close (0);
+    close (1);
+  }
+}
+
+int main(int argc, char **argv, char **envp){
 
 
     // ------------------- Parsing Config File ------------------- //
@@ -81,6 +109,9 @@ int main(int argc, char **argv){
 
     // --------------------- Run Server --------------------------- //
     run(servers_setup);
+	  
+    (void)envp;
+    // CGIhandle("www/hello.php", envp);
 
-  return (EXIT_SUCCESS);
+    return (EXIT_SUCCESS);
 }

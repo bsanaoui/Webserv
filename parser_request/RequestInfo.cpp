@@ -10,6 +10,7 @@ RequestInfo::RequestInfo()
     this->_HTTP_version = std::string();
     this->_headers = std::map<std::string, std::string>();
     this->_body = std::string();
+    this->_is_bad_req = false;
 }
 
 RequestInfo::RequestInfo(const RequestInfo& request_info)
@@ -24,7 +25,7 @@ RequestInfo&    RequestInfo::operator=(const RequestInfo& request_info)
     this->_HTTP_version = request_info._HTTP_version;
     this->_headers = request_info._headers;
     this->_body = request_info._body;
-
+    this->_is_bad_req = request_info._is_bad_req;
     return (*this);
 }
 
@@ -56,3 +57,12 @@ std::string                         RequestInfo::getBody() const
     return (this->_body);
 }
 
+
+// ------------------------------------------------------------ //
+// -------------------- Member Methods ------------------------ //
+// ------------------------------------------------------------ //
+
+bool                                RequestInfo::isBadRequest() const
+{
+    return (this->_is_bad_req);
+}
