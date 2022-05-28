@@ -14,7 +14,7 @@ SRC =  	Server.cpp  main.cpp\
 all : $(NAME)
 
 $(NAME): $(SRC)
-	@c++ -Wall -Wextra -Werror $(SRC) -o $(NAME)
+	@c++ -Wall -Wextra -Werror $(SRC) -o $(NAME) -g -fsanitize=address 
 
 clean:
 	@ rm -rf *.gch

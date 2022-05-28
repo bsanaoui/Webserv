@@ -90,11 +90,14 @@ void	Server::handleConnection(ServerSetup server_setup, int new_socket)
 
 	// ----------------------- Handle Response ----------------------------- //
 	Response resp(new_socket, request_info, server_setup);
-	response = resp.test(request_info, server_setup);
+  resp.handleResponse();
+	// response = resp.test(request_info, server_setup);
 
 	// ----------------------- Send Response To client --------------------- //
-	send(new_socket, response.c_str(), response.length(), 0);
+	// send(new_socket, response.c_str(), response.length(), 0);
+  if (resp.IsSended())
+      resp.sendResponse();
 	std::cout << "\n++++++++++ message sent ++++++++++++\n" << std::endl;
 	
-	close(new_socket);
+	// close(new_socket);
 }

@@ -102,7 +102,9 @@ t_location*                                  ServerSetup::getLocation(std::strin
             if (getLocations()[i].path == path)
             {
                 *type = IS_LOCATION;
-                return (&getLocations()[i]);
+                t_location *location = new t_location();
+                *location = getLocations()[i];
+                return (location);
             }
          path = path.substr(0, path.find_last_of('/'));
     }
