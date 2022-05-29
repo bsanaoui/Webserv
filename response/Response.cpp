@@ -100,11 +100,13 @@ int                                     Response::GET()
 
 int                                     Response::POST()
 {
+    return this->sendErrorPage(405, "Method Not Allowed");
     return (1);
 }
 
 int                                     Response::DELETE()
 {
+    return this->sendErrorPage(405, "Method Not Allowed");
     return (1);
 }
 
@@ -313,48 +315,48 @@ std::string                     Response::getContentType(const std::string& full
 
 // ----------------------------- TEST !!!!! ---------------------------------------//
 // ----------------------------- TEST !!!!! ---------------------------------------//
-std::string  Response::test(RequestInfo request_info, ServerSetup server_setup){
+// std::string  Response::test(RequestInfo request_info, ServerSetup server_setup){
 
-    //1 -  verify any method (GET POST DELETE) //     // and exist in config file
-    // Verifiez extention of file if exist
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
-    // Verifier root && the file if exist
-    // Calculate Lenght of the file;
-    if (request_info.getRequest_method() == "GET")
-    {   
-        std::string path;
-        // if root
-        if (request_info.getRequest_target() == "/about")
-            path = server_setup.getRoot() + server_setup.getLocations()[0].path + "/" + server_setup.getLocations()[0].index[0];
-        else // if location
-            path = server_setup.getRoot() + "/" + server_setup.getIndex().at(0);
+//     //1 -  verify any method (GET POST DELETE) //     // and exist in config file
+//     // Verifiez extention of file if exist
+//     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
+//     // Verifier root && the file if exist
+//     // Calculate Lenght of the file;
+//     if (request_info.getRequest_method() == "GET")
+//     {   
+//         std::string path;
+//         // if root
+//         if (request_info.getRequest_target() == "/about")
+//             path = server_setup.getRoot() + server_setup.getLocations()[0].path + "/" + server_setup.getLocations()[0].index[0];
+//         else // if location
+//             path = server_setup.getRoot() + "/" + server_setup.getIndex().at(0);
         
-        std::ifstream index_file(path);
+//         std::ifstream index_file(path);
 
-        if (!index_file.is_open())
-            return (0);
+//         if (!index_file.is_open())
+//             return (0);
     
-        std::cout << "\n\n/<< ****************** Index Content : ********************* >>"<< std:: endl;
-        std::string response_line;
-        std::string body;
-        int         size_body = 0;
-        while (std::getline(index_file, response_line))
-        {
-            // std::istringstream iss(response_line);
-            // int a, b;
-            // if (!(iss >> a >> b)) { break; } // error
-            body.append(response_line);
-            size_body += response_line.length();
-            if (!index_file.eof())
-            {
-                body.append("\n");
-                size_body++;
-            }
-        }
-        response.append(std::to_string(size_body));
-        response.append("\r\n\r\n");
-        response.append(body);
-        index_file.close();
-    }
-    return (response);
-}
+//         std::cout << "\n\n/<< ****************** Index Content : ********************* >>"<< std:: endl;
+//         std::string response_line;
+//         std::string body;
+//         int         size_body = 0;
+//         while (std::getline(index_file, response_line))
+//         {
+//             // std::istringstream iss(response_line);
+//             // int a, b;
+//             // if (!(iss >> a >> b)) { break; } // error
+//             body.append(response_line);
+//             size_body += response_line.length();
+//             if (!index_file.eof())
+//             {
+//                 body.append("\n");
+//                 size_body++;
+//             }
+//         }
+//         response.append(std::to_string(size_body));
+//         response.append("\r\n\r\n");
+//         response.append(body);
+//         index_file.close();
+//     }
+//     return (response);
+// }

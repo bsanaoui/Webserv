@@ -7,6 +7,7 @@ RequestInfo::RequestInfo()
 {
     this->_request_method = std::string();
     this->_request_target = std::string();
+    this->_query_string = std::string();
     this->_HTTP_version = std::string();
     this->_headers = std::map<std::string, std::string>();
     this->_body = std::string();
@@ -22,6 +23,7 @@ RequestInfo&    RequestInfo::operator=(const RequestInfo& request_info)
 {
     this->_request_method = request_info._request_method;
     this->_request_target = request_info._request_target;
+    this->_query_string = request_info._query_string;
     this->_HTTP_version = request_info._HTTP_version;
     this->_headers = request_info._headers;
     this->_body = request_info._body;
@@ -57,7 +59,10 @@ std::string                         RequestInfo::getBody() const
     return (this->_body);
 }
 
-
+std::string                         RequestInfo::getQueryString() const
+{
+    return (this->_query_string); 
+}
 // ------------------------------------------------------------ //
 // -------------------- Member Methods ------------------------ //
 // ------------------------------------------------------------ //

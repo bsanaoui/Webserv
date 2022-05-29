@@ -10,7 +10,8 @@ class RequestInfo
     private:
     //------ private member --------- >>
     std::string                         _request_method; // Ex: GET
-    std::string                         _request_target; // Ex: /download ;URL
+    std::string                         _request_target; // Ex: /download ;URI
+    std::string                         _query_string; // Ex: ?id=1
     std::string                         _HTTP_version; // Ex: HTTP/1.1
     std::map<std::string, std::string>  _headers; // Ex: Connection: keep-alive
     std::string                         _body;
@@ -32,7 +33,8 @@ class RequestInfo
     std::string                         getRequest_target() const;
     std::string                         getHTTP_version() const;
     std::map<std::string, std::string>  getHeaders() const;
-    std::string                         getBody() const;                                
+    std::string                         getBody() const;
+    std::string                         getQueryString() const;                                
 
     // --------------------------------------------------------- //
     // --------------------  Member Methods -------------------- //

@@ -48,12 +48,19 @@ RequestInfo    ParserRe::parse() // error multi server
     // Parse start Line
     this->eat(WORD);
     requestInfo._request_method = prev_token.value;
-    this->eat(WORD);
-    requestInfo._request_target = prev_token.value;
+    this->eat(WORD); // Eat target (URI)
+    size_t n;
+    if ((n = prev_token.value.find("?")) != std::string::npos)
+    {
+        requestInfo._request_target = prev_token.value.substr(0, n);
+        requestInfo._query_string = prev_token.value.substr(n + 1);
+    }
+    else
+        requestInfo._request_target = prev_token.value;
     this->eat(WORD);
     requestInfo._HTTP_version = prev_token.value;
     
-    while (curr_token.type != TOKEN_BODY)
+    while (curr_token.type != TOKEN_BODY && !_is_bad_req)
         requestInfo._headers.insert(parseHeader());
     requestInfo._body = curr_token.value;
     requestInfo._is_bad_req = this->_is_bad_req;

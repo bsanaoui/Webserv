@@ -69,7 +69,7 @@ public:
     // --------------------------------------------------------- //
     static std::string                     getContentType(const std::string& full_path);
     // --------------------  Test Methods ---------------------- //
-    std::string     test(RequestInfo request_info, ServerSetup server_setup);
+    // std::string     test(RequestInfo request_info, ServerSetup server_setup);
 
 };
 
