@@ -116,9 +116,11 @@ int                                     Response::POST(std::string& path)
 }
 
 int                                     Response::DELETE(std::string& path)
-{   
-    (void)path;
-    return this->sendErrorPage(405, "Method Not Allowed");
+{
+    std::string cmd = "rm -rf " + path;
+    system(cmd.c_str());
+    ConstructResponseFile(200, "OK", "Succes_Delete.html");
+    sendResponse();
     return (1);
 }
 
@@ -258,7 +260,6 @@ bool                                    Response::sendErrorPage(int status_code,
     std::cout << "ERROR: " << status_code << " " << debug_msg << "!" << std::endl;
     return (false);
 }
-
 
 bool                                    Response::verifyRequest() // false if Response Error Sended
 {

@@ -12,7 +12,10 @@ std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server)
 
     envp.push_back(strdup((std::string("REQUEST_METHOD") + "=" + request.getRequest_method()).c_str()));
 	envp.push_back(strdup((std::string("CONTENT_LENGTH") + "=" + std::to_string(request.getBody().length())).c_str()));
-	envp.push_back(strdup((std::string("CONTENT_TYPE") + "=text/html").c_str()));
+    if (request.getRequest_method() == "POST" && request.getHeaders().find("Content-Type") != request.getHeaders().end())
+        envp.push_back(strdup((std::string("CONTENT_TYPE") + "=" + request.getHeaders()["Content-Type"]).c_str()));
+    else
+	    envp.push_back(strdup((std::string("CONTENT_TYPE") + "=text/html").c_str()));
     envp.push_back(strdup((std::string("QUERY_STRING") + "=" + request.getQueryString()).c_str()));
     envp.push_back(strdup((std::string("REDIRECT_STATUS") + "=200").c_str()));
     envp.push_back(strdup((std::string("PATH_TRANSLATED") + "=" + server.getRoot()
@@ -21,13 +24,13 @@ std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server)
             + request.getRequest_target()).c_str()));
 	envp.push_back(strdup((std::string("GATEWAY_INTERFACE") + "=CGI/1.1").c_str()));
 
-	envp.push_back(strdup((std::string("SERVER_NAME") + "=" + server.getServer_name()[0]).c_str()));
-	envp.push_back(strdup((std::string("SERVER_PORT") + "=" + std::to_string(server.getListen().first)).c_str()));
-	envp.push_back(strdup((std::string("SERVER_PROTOCOL") + "=HTTP/1.1").c_str()));
+	// envp.push_back(strdup((std::string("SERVER_NAME") + "=" + server.getServer_name()[0]).c_str()));
+	// envp.push_back(strdup((std::string("SERVER_PORT") + "=" + std::to_string(server.getListen().first)).c_str()));
+	// envp.push_back(strdup((std::string("SERVER_PROTOCOL") + "=HTTP/1.1").c_str()));
 	// envp.push_back(strdup((std::string("SERVER_SOFTWARE") + "=" + "SERVER_NAME").c_str()));
-	envp.push_back(strdup((std::string("REMOTE_ADDR") + "=127.0.0.1").c_str()));
-	envp.push_back(strdup((std::string("REMOTE_HOST") + "=" + "localhost").c_str()));
-    envp.push_back(strdup((std::string("SCRIPT_NAME") + "=" + request.getRequest_target()).c_str()));
+	// envp.push_back(strdup((std::string("REMOTE_ADDR") + "=127.0.0.1").c_str()));
+	// envp.push_back(strdup((std::string("REMOTE_HOST") + "=" + "localhost").c_str()));
+    // envp.push_back(strdup((std::string("SCRIPT_NAME") + "=" + request.getRequest_target()).c_str()));
     envp.push_back(NULL);
     return (envp);
 }
