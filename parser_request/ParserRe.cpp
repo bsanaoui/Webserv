@@ -85,5 +85,5 @@ std::pair<std::string, std::string>          ParserRe::parseHeader()
 void ParserRe::errorDisplay(std::string s)
 {
     std::cerr << "Error: " << s << std::endl;
-    exit(EXIT_FAILURE);
+    //exit(EXIT_FAILURE);
 }

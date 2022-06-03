@@ -9,7 +9,8 @@ SRC =  	Server.cpp  main.cpp\
 		parser_request/LexerRe.cpp \
 		parser_request/ParserRe.cpp \
 		response/Response.cpp \
-		utilities/Utils.cpp
+		utilities/Utils.cpp \
+		cgi/CGI.cpp
 
 all : $(NAME)
 

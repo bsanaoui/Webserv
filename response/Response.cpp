@@ -2,14 +2,14 @@
 #include <sys/socket.h>
 #include "../include/Utils.hpp"
 #include "Extensions.hpp"
-
+#include "../cgi/CGI.hpp"
 // --------------------------------------------------------- //
 // --------------- Constructors and Operators -------------- //
 // --------------------------------------------------------- //
 
 Response::Response(int fd_sock_req, RequestInfo request_info, ServerSetup server_setup) 
     : _server_setup(server_setup), _request_info(request_info), _fd_sock_req(fd_sock_req),
-       _type_req_target(IS_LOCATION)
+       _is_error(false), _type_req_target(IS_LOCATION)
 {
     this->_response_file.open("response.temp", std::ios::out); // Open File
     if (!_response_file.is_open())
@@ -17,8 +17,9 @@ Response::Response(int fd_sock_req, RequestInfo request_info, ServerSetup server
             this->senUnxpectedError();
             return ;
     }
+
     if (request_info.getRequest_target() != "/")
-    {
+    {   
         t_location *location;
         if (request_info.isBadRequest())
         {   
@@ -58,7 +59,7 @@ bool                                    Response::IsSended()
 int                                     Response::handleResponse()
 {
     if (this->_is_error || !this->verifyRequest())
-        return (1);
+        this->sendErrorPage(400, "Bad Request");
     if (this->_request_info.getRequest_method() == "GET")
         return (this->GET());
     else if (this->_request_info.getRequest_method() == "POST")
@@ -73,9 +74,15 @@ int                                     Response::GET()
     std::string path;
     if (this->_type_req_target == IS_FILE)
     {
-        path = this->_server_setup.getRoot() + this->_request_info.getRequest_target();
+        std::string uri = _request_info.getRequest_target();
+        if (uri.substr(uri.find_last_of(".") + 1) == "php")
+            path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);
+        else
+            path = this->_server_setup.getRoot() + this->_request_info.getRequest_target();
         this->ConstructResponseFile(200, "OK", path);
         this->sendResponse();
+        if (uri.compare(uri.find_last_of('.'), uri.length(), ".php") != (int)std::string::npos)
+            system("cat /dev/null > cgi.html");
     }
     else if (this->_type_req_target == IS_LOCATION && this->_server_setup.getAutoindex() == "off")
     {
@@ -206,8 +213,15 @@ void                                    Response::sendResponse()
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
     {
-        if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
-            close(this->_fd_sock_req);
+        try
+        {
+            if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
+                close(this->_fd_sock_req);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
     close(this->_fd_sock_req);
 }
@@ -276,8 +290,15 @@ void                                    Response::senUnxpectedError()
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
     {
-        if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
+        try
+        {
+            if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
             close(this->_fd_sock_req);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
 }
 

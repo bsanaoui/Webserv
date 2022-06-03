@@ -45,16 +45,18 @@ void    Parser::eat(TypeToken token_type)
 	}
 }
  
-std::vector<ServerSetup>    Parser::parse() // error multi server
+std::vector<ServerSetup>    Parser::parse(char ***envp) // error multi server
 {
     std::vector<ServerSetup> servers;
     this->eatServer(); // check if is server context and advance to next token
     servers.push_back(parseServer());
 
+    int count_server = 0;
     while (curr_token.type != TOKEN_EOF)
     {
         this->eatServer();
         servers.push_back(parseServer());
+        servers[count_server++].setEnvp(envp);
     }
     return (servers);
 }
@@ -108,6 +110,7 @@ std::pair<short, u_int32_t> Parser::parseListen()
         listen.second = inet_addr(prev_token.value.c_str());
     else
         errorDisplay(prev_token.value + ": IP address listening to is not a valid ip interface!");
+
     return (listen);
 }
 

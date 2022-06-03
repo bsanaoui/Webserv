@@ -33,6 +33,7 @@ class ServerSetup
     std::vector<std::string>                    request_method;         // request_method       GET POST;
     std::string                                 autoindex;              // autoindex            off;
     std::vector<t_location>                     locations;              // locations            location /upload {}
+    char***                                     envp;
 
     public:
     // --------------------------------------------------------- //
@@ -55,7 +56,9 @@ class ServerSetup
     std::vector<std::string>                    getRequest_method() const;        
     std::string                                 getAutoindex() const;             
     std::vector<t_location>                     getLocations() const; 
+    char**                                      getEnvp() const;
 
+    void                                        setEnvp(char*** envp);
     // --------------------------------------------------------- //
     // -------------------- Member Methods --------------------- //
     // --------------------------------------------------------- //

@@ -1,7 +1,6 @@
 #include "include/Utils.hpp"
 #include "include/Server.hpp"
 
-
 void   run(std::vector<ServerSetup> servers_setup)
 {
   std::vector<ServerSetup>::iterator it_b(servers_setup.begin());
@@ -46,7 +45,7 @@ void   run(std::vector<ServerSetup> servers_setup)
   }
 }
 
-std::vector<ServerSetup> parseConfig(int argc, char **argv)
+std::vector<ServerSetup> parseConfig(int argc, char **argv, char ***envp)
 {
     std::string contents;
     if (argc == 2)
@@ -59,27 +58,26 @@ std::vector<ServerSetup> parseConfig(int argc, char **argv)
     //     std::cout << "Token \"" << token.type << " | value = \"" << token.value << "\"" << std::endl;
 
     Parser parser(lexer);
-    std::vector<ServerSetup> servers; 
-    return (parser.parse());
+    return (parser.parse(envp));
 }
 
 
-int main(int argc, char **argv){
+int main(int argc, char **argv, char **envp){
 
 
     // ------------------- Parsing Config File ------------------- //
+    std::vector<ServerSetup> servers_setup = parseConfig(argc, argv, &envp);
 
-    std::vector<ServerSetup> servers_setup = parseConfig(argc, argv);
     // --------------------- Test Parsing ------------------------ //
 
-    // for (int i = 0; i < (int)servers.size() ;i++)
+    // for (int i = 0; i < (int)servers_setup.size() ;i++)
     //     std::cout << "Server: " << i
-    //             << " | Server name1: " << servers[i].getServer_name()[0]
-    //             << " | Error pages: " <<  servers[i].getError_pages()[0].second
-    //             << " port: "<< servers[i].getListen().first << std::endl;
+    //             << " | Server name1: " << servers_setup[i].getServer_name()[0]
+    //             << " | Error pages: " <<  servers_setup[i].getError_pages()[0].second
+    //             << " port: "<< servers_setup[i].getListen().first << std::endl;
 
-    // std::cout << "Server: 0 | " << servers[0].getLocations()[1].path << std::endl;
-    // std::cout << "Server: 0 | " << servers[0].getLocations()[1].error_pages[0].second << std::endl;
+    // std::cout << "Server: 0 | " << servers_setup[0].getLocations()[1].path << std::endl;
+    // std::cout << "Server: 0 | " << servers_setup[0].getLocations()[1].error_pages[0].second << std::endl;
 
     // --------------------- Run Server --------------------------- //
     run(servers_setup);

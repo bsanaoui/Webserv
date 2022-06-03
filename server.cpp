@@ -70,7 +70,7 @@ Server::Server(std::vector<ServerSetup> servers) : _address_len(sizeof(_address)
     
 void	Server::handleConnection(ServerSetup server_setup, int new_socket)
 {
-	std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 37\r\n\r\n<html><body><h2>default ok</h2>";
+	// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 37\r\n\r\n<html><body><h2>default ok</h2>";
 	long valread;
 	char request[1024] = {0};
 
@@ -81,7 +81,6 @@ void	Server::handleConnection(ServerSetup server_setup, int new_socket)
 	LexerRe lexer(request);
 	ParserRe parser(lexer);
 	RequestInfo request_info =  parser.parse();
-
 	// ---------------------- Test Request Parser ------------------------- //
 	// std::cout << request_info.getHTTP_version() << " | " << request_info.getRequest_target() << std::endl;
 

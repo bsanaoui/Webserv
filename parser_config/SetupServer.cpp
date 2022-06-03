@@ -14,6 +14,7 @@ ServerSetup::ServerSetup()
     this->request_method =  std::vector<std::string>();
     this->autoindex = std::string();
     this->locations = std::vector<t_location>();
+    this->envp = NULL;
 }
 
 ServerSetup::ServerSetup(const ServerSetup& server_setup)
@@ -32,6 +33,7 @@ ServerSetup&    ServerSetup::operator=(const ServerSetup& server_setup)
     this->request_method = server_setup.request_method;
     this->autoindex = server_setup.autoindex;
     this->locations = server_setup.locations;
+    this->envp = server_setup.envp;
     return (*this);
 }
 
@@ -81,7 +83,17 @@ std::string                                 ServerSetup::getAutoindex() const
 std::vector<t_location>                     ServerSetup::getLocations() const
 {
     return (this->locations);
-} 
+}
+
+char**                                      ServerSetup::getEnvp() const
+{
+    return (*(this->envp));
+}
+
+void                                        ServerSetup::setEnvp(char*** envp)
+{
+    this->envp = envp;
+}
 
 // --------------------------------------------------------- //
 // -------------------- Member Methods --------------------- //

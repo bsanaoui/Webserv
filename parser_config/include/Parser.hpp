@@ -32,7 +32,7 @@ class Parser
     // --------------------------------------------------------- //
     void                                        eat(TypeToken token_type);
     int                                         eatServer();
-    std::vector<ServerSetup>                    parse();
+    std::vector<ServerSetup>                    parse(char ***envp);
     ServerSetup                                 parseServer();
     std::pair<short, u_int32_t>                 parseListen();
     std::vector<std::string>                    parseWords();
