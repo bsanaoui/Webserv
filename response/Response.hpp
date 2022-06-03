@@ -21,6 +21,7 @@
 #define ERROR_PAGE_400 "error_pages/400_BAD_REQUEST.html"
 #define ERROR_PAGE_405 "error_pages/405_METHOD_NOT_ALLOWED.html"
 #define ERROR_PAGE_413 "error_pages/413_REQUEST_TOO_LARGE.html"
+#define ERROR_PAGE_403 "error_pages/403_FORBIDDEN.html"
 
 
 class Response
@@ -59,16 +60,17 @@ public:
     bool                                    verifyRequest();
     void                                    senUnxpectedError(); // send char * to client and set the _is_error to true
     std::string                             getExistIndex(); // check index that we can find in path
-    int                                     GET();
-    int                                     POST();
-    int                                     DELETE();
+    int                                     GET(std::string& path);
+    int                                     POST(std::string& path);
+    int                                     DELETE(std::string& path);
 
 
     // --------------------------------------------------------- //
     // ------------------  Non Member Functions ---------------- //
     // --------------------------------------------------------- //
     static std::string                     getContentType(const std::string& full_path);
-    
+    static bool                            isCGIFile(const std::string& uri);
+
     // --------------------  Test Methods ---------------------- //
     // std::string     test(RequestInfo request_info, ServerSetup server_setup);
 

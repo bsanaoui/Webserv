@@ -58,61 +58,66 @@ bool                                    Response::IsSended()
 
 int                                     Response::handleResponse()
 {
+    std::string path = this->_server_setup.getRoot() + this->_request_info.getRequest_target();
+
     if (this->_is_error || !this->verifyRequest())
         this->sendErrorPage(400, "Bad Request");
     if (this->_request_info.getRequest_method() == "GET")
-        return (this->GET());
+        return (this->GET(path));
     else if (this->_request_info.getRequest_method() == "POST")
-        return (this->POST());
+        return (this->POST(path));
     else if (this->_request_info.getRequest_method() == "DELETE")
-        return (this->DELETE());
+        return (this->DELETE(path));
     return this->sendErrorPage(405, "Method Not Allowed");
 }
 
-int                                     Response::GET()
+int                                     Response::GET(std::string& path)
 {   
-    std::string path;
     if (this->_type_req_target == IS_FILE)
     {
         std::string uri = _request_info.getRequest_target();
-        if (uri.substr(uri.find_last_of(".") + 1) == "php")
-            path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);
-        else
-            path = this->_server_setup.getRoot() + this->_request_info.getRequest_target();
+        if (isCGIFile(uri))
+            path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);            
         this->ConstructResponseFile(200, "OK", path);
         this->sendResponse();
-        if (uri.compare(uri.find_last_of('.'), uri.length(), ".php") != (int)std::string::npos)
+        if (isCGIFile(uri))
             system("cat /dev/null > cgi.html");
     }
     else if (this->_type_req_target == IS_LOCATION && this->_server_setup.getAutoindex() == "off")
     {
-        std::string path;
-
         if ((path = getExistIndex()) != "NOT_FOUND")
         {
             this->ConstructResponseFile(200, "OK", path);
             this->sendResponse();
         }
-
         else
-            return (this->sendErrorPage(404, "File Not Found"));
+            this->sendErrorPage(404, "File Not Found");
     }
     else if (this->_type_req_target == IS_LOCATION && this->_server_setup.getAutoindex() == "on")
     {
         // function auto index;
-        return (this->sendErrorPage(403, "Forbidden"));// Not created yet
+        return (this->sendErrorPage(403, "Forbidden"));// Not checked
     }
-    return (1);
+    return (this->sendErrorPage(403, "Forbidden"));
 }
 
-int                                     Response::POST()
-{
-    return this->sendErrorPage(405, "Method Not Allowed");
-    return (1);
+int                                     Response::POST(std::string& path)
+{   
+    std::string uri = _request_info.getRequest_target();
+    if (this->_type_req_target == IS_FILE && isCGIFile(uri))
+    {
+        path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);            
+        this->ConstructResponseFile(200, "OK", path);
+        this->sendResponse();
+        system("cat /dev/null > cgi.html");
+        return (0);
+    }
+    return (sendErrorPage(403, "Forbidden"));
 }
 
-int                                     Response::DELETE()
-{
+int                                     Response::DELETE(std::string& path)
+{   
+    (void)path;
     return this->sendErrorPage(405, "Method Not Allowed");
     return (1);
 }
@@ -150,6 +155,8 @@ std::pair<std::string, std::string>    Response::getErrorPage(int status_code) /
         return (std::make_pair(ERROR_PAGE_405, "KO"));
     else if (status_code == 413)
         return (std::make_pair(ERROR_PAGE_413, "KO"));
+    else if (status_code == 403)
+        return (std::make_pair(ERROR_PAGE_403, "KO"));
     return (std::make_pair(ERROR_PAGE_404, "KO")); // default
 }
 
@@ -164,6 +171,7 @@ void               Response::appendStartLine(int status_code, const std::string&
 
 void                Response::appendContentType(const std::string& path)
 {
+    std::cout << "appendContentType" << std::endl;
     this->_response_file << "Content-Type: ";
     this->_response_file << getContentType(path);
     this->_response_file << "\r\n";
@@ -171,13 +179,15 @@ void                Response::appendContentType(const std::string& path)
 
 void                Response::appendContentLength(const std::string& path)
 {
+    std::cout << "appendContentLength" << std::endl;
     this->_response_file << "Content-Length: ";
     this->_response_file << (int)sizeFile(path);
     this->_response_file << "\r\n";
 }
 
 void                Response::appendBody(const std::string& path)
-{
+{   
+    std::cout << "appendBody" << std::endl; // debug
     std::ifstream   in_file(path);
     std::string     tmp_line;
 
@@ -199,6 +209,7 @@ void                Response::appendBody(const std::string& path)
 
 void                                    Response::sendResponse()
 {
+    std::cout << "Response sent" << std::endl; // DEBUG
     this->_response_file.open(RESPONSE_FILE_NAME, std::ios::in);
 
     char tmp_char[LENGHT_SEND_BUFFER];
@@ -332,6 +343,12 @@ std::string                     Response::getContentType(const std::string& full
     return "unknown";
 }
 
+bool                            Response::isCGIFile(const std::string& uri)
+{
+    if (uri.substr(uri.find_last_of(".") + 1) == "php")
+        return (true);
+    return (false);
+}
 
 
 // ----------------------------- TEST !!!!! ---------------------------------------//

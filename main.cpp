@@ -67,7 +67,7 @@ int main(int argc, char **argv, char **envp){
 
     // ------------------- Parsing Config File ------------------- //
     std::vector<ServerSetup> servers_setup = parseConfig(argc, argv, &envp);
-
+    signal(SIGPIPE, SIG_IGN); //ignore SIGPIPE // fix problem with broken pipe when client close connection
     // --------------------- Test Parsing ------------------------ //
 
     // for (int i = 0; i < (int)servers_setup.size() ;i++)

@@ -5,7 +5,7 @@
 #include "../parser_request/include/RequestInfo.hpp"
 #include "../parser_config/include/ServerSetup.hpp"
 
-std::string                 handle_cgi(std::string path, RequestInfo &request, ServerSetup &server);
+const std::string                 handle_cgi(std::string path, RequestInfo &request, ServerSetup &server);
 std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server);
 
 #endif

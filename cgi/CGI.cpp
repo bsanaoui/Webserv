@@ -20,21 +20,22 @@ std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server)
 	envp.push_back(strdup((std::string("PATH_INFO") + "=" + server.getRoot()
             + request.getRequest_target()).c_str()));
 	envp.push_back(strdup((std::string("GATEWAY_INTERFACE") + "=CGI/1.1").c_str()));
-	// envp.push_back(strdup((std::string("SERVER_NAME") + "=" + server.getServer_name()[0]).c_str()));
-	// envp.push_back(strdup((std::string("SERVER_PORT") + "=" + std::to_string(server.getListen().first)).c_str()));
-	// envp.push_back(strdup((std::string("SERVER_PROTOCOL") + "=HTTP/1.1").c_str()));
+
+	envp.push_back(strdup((std::string("SERVER_NAME") + "=" + server.getServer_name()[0]).c_str()));
+	envp.push_back(strdup((std::string("SERVER_PORT") + "=" + std::to_string(server.getListen().first)).c_str()));
+	envp.push_back(strdup((std::string("SERVER_PROTOCOL") + "=HTTP/1.1").c_str()));
 	// envp.push_back(strdup((std::string("SERVER_SOFTWARE") + "=" + "SERVER_NAME").c_str()));
-	// envp.push_back(strdup((std::string("REMOTE_ADDR") + "=127.0.0.1").c_str()));
-	// envp.push_back(strdup((std::string("REMOTE_HOST") + "=" + "localhost").c_str()));
-    // envp.push_back(strdup((std::string("SCRIPT_NAME") + "=" + request.getRequest_target()).c_str()));
+	envp.push_back(strdup((std::string("REMOTE_ADDR") + "=127.0.0.1").c_str()));
+	envp.push_back(strdup((std::string("REMOTE_HOST") + "=" + "localhost").c_str()));
+    envp.push_back(strdup((std::string("SCRIPT_NAME") + "=" + request.getRequest_target()).c_str()));
     envp.push_back(NULL);
     return (envp);
 }
 
-std::string     handle_cgi(std::string path, RequestInfo &request, ServerSetup &server)
+const std::string     handle_cgi(std::string path, RequestInfo &request, ServerSetup &server)
 {   
     std::cout << "Handle a CGI: " << path << std::endl; // DEBUG
-     
+
     std::vector<const char*> argv;
     std::vector<const char*> envp;
     std::string out_file = "cgi.html";
@@ -50,14 +51,14 @@ std::string     handle_cgi(std::string path, RequestInfo &request, ServerSetup &
     in_file.close();
     
     int fd_out = open(out_file.c_str(), O_CREAT|O_RDWR, 0777);
-    int fd_in = open("body_req.txt", O_CREAT|O_RDONLY, 0777);
+    int fd_in = open("body_req.txt", O_CREAT|O_RDWR, 0777);
 
     if ((pid = fork()) == - 1)
         return ("Error: fork"); // Set error fork
     else if (pid == 0)
     {
-        dup2(fd_out, 1);
         dup2(fd_in, 0);
+        dup2(fd_out, 1);
         execve(argv[0], const_cast<char * const *>(argv.data()), const_cast<char * const *>(envp.data()));
         exit (0);
     }
