@@ -98,29 +98,50 @@ void                                        ServerSetup::setEnvp(char*** envp)
 // --------------------------------------------------------- //
 // -------------------- Member Methods --------------------- //
 // --------------------------------------------------------- //
-t_location*                                  ServerSetup::getLocation(std::string uri, TypeRequestTarget *type) const
-{   
-    std::string path = getRoot() + uri;
-    if (getPathType(path) == IS_FILE)
-    {
-        *type = IS_FILE;
-        return (NULL);
-    }
-    // Chank the URI directories /../.../..
-    path = uri;
-    while (coutChar(path, '/') > 0) // plus two directory
-    {
-        for (size_t i = 0; i < getLocations().size(); i++)
-            if (getLocations()[i].path == path)
+t_location*                                 ServerSetup::isLocation(std::string path, TypeRequestTarget *type) const
+{
+    for (size_t i = 0; i < getLocations().size(); i++)
+        if (getLocations()[i].path == path)
             {
                 *type = IS_LOCATION;
                 t_location *location = new t_location();
                 *location = getLocations()[i];
                 return (location);
             }
-         path = path.substr(0, path.find_last_of('/'));
+    return (NULL);
+}
+
+t_location*                                  ServerSetup::getLocation(std::string uri, TypeRequestTarget *type) const
+{   
+    std::string path = getRoot() + uri;
+    TypeRequestTarget type_request;
+    t_location* location;
+    if ((type_request = getPathType(path)) == IS_FILE)
+    {
+        *type = IS_FILE;
+        return (NULL);
     }
-    *type = IS_NOT_FOUND;
+    // Chank the URI directories /../.../..
+    path = uri;
+    if (this->getAutoindex() == "off")
+    {
+        while (coutChar(path, '/') > 0) // plus two directory
+        {   
+            if ((location = isLocation(path, type)) != NULL)
+                return (location);
+            path = path.substr(0, path.find_last_of('/'));
+        }
+    }
+    else
+    {
+        if ((location = isLocation(path, type)) != NULL)
+            return (location);
+    }
+   
+    if (type_request == IS_DIRECTORY)
+        *type = IS_DIRECTORY;
+    else
+        *type = IS_NOT_FOUND;
     return (NULL);
 }
 

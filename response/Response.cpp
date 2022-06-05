@@ -3,6 +3,7 @@
 #include "../include/Utils.hpp"
 #include "Extensions.hpp"
 #include "../cgi/CGI.hpp"
+#include "AutoIndex.hpp"
 // --------------------------------------------------------- //
 // --------------- Constructors and Operators -------------- //
 // --------------------------------------------------------- //
@@ -26,7 +27,7 @@ Response::Response(int fd_sock_req, RequestInfo request_info, ServerSetup server
             sendErrorPage(400, "Bad Request");
             return ;
         }
-        else if (!(location = this->_server_setup.getLocation(request_info.getRequest_target(), &_type_req_target)))
+       location = this->_server_setup.getLocation(request_info.getRequest_target(), &_type_req_target);
         {
             if (this->_type_req_target == IS_NOT_FOUND)
             {
@@ -82,6 +83,7 @@ int                                     Response::GET(std::string& path)
         this->sendResponse();
         if (isCGIFile(uri))
             system("cat /dev/null > cgi.html");
+        return (1);
     }
     else if (this->_type_req_target == IS_LOCATION && this->_server_setup.getAutoindex() == "off")
     {
@@ -92,13 +94,20 @@ int                                     Response::GET(std::string& path)
         }
         else
             this->sendErrorPage(404, "File Not Found");
+        return (1);
     }
-    else if (this->_type_req_target == IS_LOCATION && this->_server_setup.getAutoindex() == "on")
+    else if (this->_type_req_target != IS_NOT_FOUND && this->_server_setup.getAutoindex() == "on")
     {
-        // function auto index;
-        return (this->sendErrorPage(403, "Forbidden"));// Not checked
+        std::cout << "Autoindex" << std::endl;
+        if (this->_type_req_target == IS_LOCATION)
+            this->ConstructResponseFile(200, "OK", autoIndexPath(this->_server_setup.getRoot()));
+        else if (this->_type_req_target == IS_DIRECTORY)
+            this->ConstructResponseFile(200, "OK", autoIndexPath(path));
+        this->sendResponse();
+        std::remove(AUTO_INDEX_PATH);
+        return (1);
     }
-    return (this->sendErrorPage(403, "Forbidden"));
+    return (this->sendErrorPage(404, "File/Directory Not Found"));
 }
 
 int                                     Response::POST(std::string& path)
@@ -223,6 +232,7 @@ void                                    Response::sendResponse()
             break ;
         send(this->_fd_sock_req, &tmp_char, n_read, 0);
     }
+
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
     {
@@ -268,7 +278,7 @@ bool                                    Response::verifyRequest() // false if Re
     for (i = 0; i < (int)this->_server_setup.getRequest_method().size(); i++)
         if (this->_server_setup.getRequest_method()[i] == this->_request_info.getRequest_method())
             break;
-    if (i == (int)this->_server_setup.getRequest_method().size())
+    if (this->_server_setup.getRequest_method()[i] != this->_request_info.getRequest_method())
         return (sendErrorPage(405));
 
     // check auto index priority

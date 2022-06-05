@@ -113,7 +113,7 @@ TypeRequestTarget   getPathType(const std::string& uri)
     std::ifstream inFile(uri.c_str());
     if(inFile.good()){
         if (stat(uri.c_str(), &stats) == 0 && stats.st_mode == 16877)
-            return (IS_LOCATION); // is folder
+            return (IS_DIRECTORY); // is folder
         else 
             return (IS_FILE); // is File
     }

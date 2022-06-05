@@ -10,12 +10,13 @@ SRC =  	Server.cpp  main.cpp\
 		parser_request/ParserRe.cpp \
 		response/Response.cpp \
 		utilities/Utils.cpp \
-		cgi/CGI.cpp
+		cgi/CGI.cpp \
+		response/AutoIndex.cpp
 
 all : $(NAME)
 
 $(NAME): $(SRC)
-	@c++ -Wall -Wextra -Werror $(SRC) -o $(NAME) -g -fsanitize=address 
+	@c++ -Wall -Wextra -Werror $(SRC) -o $(NAME) #-g -fsanitize=address 
 
 clean:
 	@ rm -rf *.gch

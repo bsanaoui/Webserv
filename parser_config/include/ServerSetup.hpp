@@ -63,6 +63,7 @@ class ServerSetup
     // -------------------- Member Methods --------------------- //
     // --------------------------------------------------------- //
     t_location*                                 getLocation(std::string uri, TypeRequestTarget *type) const;
+    t_location*                                 isLocation(std::string path, TypeRequestTarget *type) const;
 
     // --------------------------------------------------------- //
     // ----------------- Non Member Methods -------------------- //

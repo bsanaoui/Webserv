@@ -1,5 +1,6 @@
 #include "include/Utils.hpp"
 #include "include/Server.hpp"
+#include "response/AutoIndex.hpp"
 
 void   run(std::vector<ServerSetup> servers_setup)
 {
@@ -81,6 +82,8 @@ int main(int argc, char **argv, char **envp){
 
     // --------------------- Run Server --------------------------- //
     run(servers_setup);
+    
+
 
 	  
     return (EXIT_SUCCESS);

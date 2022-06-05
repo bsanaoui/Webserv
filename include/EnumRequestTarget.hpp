@@ -5,6 +5,7 @@ enum  TypeRequestTarget
 {
     IS_LOCATION,
     IS_FILE,
+    IS_DIRECTORY,
     IS_NOT_FOUND
 };
 
