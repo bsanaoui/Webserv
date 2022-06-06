@@ -71,32 +71,58 @@ Server::Server(std::vector<ServerSetup> servers) : _address_len(sizeof(_address)
 void	Server::handleConnection(ServerSetup server_setup, int new_socket)
 {
 	// std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 37\r\n\r\n<html><body><h2>default ok</h2>";
-	long valread;
-	char request[1024] = {0};
-
 	// ---------------------- Reading Request --------------------------- //
-	valread = recv(new_socket, request, 1024, 0);
+	std::string request = receiveRequest(new_socket);
 
 	// --------------------- Parsing The Request ------------------------- //
 	LexerRe lexer(request);
 	ParserRe parser(lexer);
 	RequestInfo request_info =  parser.parse();
-	// ---------------------- Test Request Parser ------------------------- //
-	// std::cout << request_info.getHTTP_version() << " | " << request_info.getRequest_target() << std::endl;
 
 	// ----------------------- Print Request ------------------------------ //
-	std::cout << std::endl << request << "\n" <<std::endl;
+  
+  std::cout << "<< ================== Start Request =================== >>" << std::endl;
+	std::cout << request << "\n" <<std::endl;
+  std::cout << "<< =================== End Request ==================== >>" << std::endl;
+  std::cout << "<< ================== Lenght all Request ============== >>" << std::endl;
+  std::cout << request.length() << std::endl;
+  std::cout << "<< ==================================================== >>" << std::endl;
 
 	// ----------------------- Handle Response ----------------------------- //
 	Response resp(new_socket, request_info, server_setup);
   resp.handleResponse();
-	// response = resp.test(request_info, server_setup);
 
 	// ----------------------- Send Response To client --------------------- //
-	// send(new_socket, response.c_str(), response.length(), 0);
   if (resp.IsSended())
       resp.sendResponse();
 	std::cout << "\n++++++++++ message sent ++++++++++++\n" << std::endl;
-	
-	// close(new_socket);
+}
+
+std::string   Server::receiveRequest(int new_socket)
+{
+    char request[1024] = {0};
+    long valread;
+    std::string request_str;
+
+    valread = recv(new_socket, request, 1024, 0);
+    request_str = std::string(request, valread);
+    // --------------------- Parsing The Request ------------------------- //
+	  LexerRe lexer(request);
+	  ParserRe parser(lexer);
+	  RequestInfo request_info =  parser.parse();
+    if (request_info.getHeaders().find("Content-Length") != request_info.getHeaders().end())
+    {
+      int content_length = stringToInt(request_info.getHeaders()["Content-Length"]);
+      char buffer[content_length];
+      valread = recv(new_socket, buffer, content_length, 0);
+      if (valread > 0)
+        request_str.append(std::string(buffer, valread));  // to convert char* to string event /0 not stop in
+    }
+
+    // while ((valread = recv(new_socket, request, 1024, 0)) > 0)
+    // {
+    //     request_str.append(request);
+    //     memset(request, 0, 1024);
+    // }
+    return (request_str);
 }

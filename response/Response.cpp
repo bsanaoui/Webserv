@@ -60,7 +60,6 @@ bool                                    Response::IsSended()
 int                                     Response::handleResponse()
 {
     std::string path = this->_server_setup.getRoot() + this->_request_info.getRequest_target();
-
     if (this->_is_error || !this->verifyRequest())
         this->sendErrorPage(400, "Bad Request");
     if (this->_request_info.getRequest_method() == "GET")
@@ -98,11 +97,6 @@ int                                     Response::GET(std::string& path)
     }
     else if (this->_type_req_target != IS_NOT_FOUND && this->_server_setup.getAutoindex() == "on")
     {
-        std::cout << "==================> Autoindex is on <====================" << std::endl;
-        std::cout << "getRoot: " << this->_server_setup.getRoot() << std::endl;
-        std::cout << "getRequest_target: " << this->_request_info.getRequest_target() << std::endl;
-        std::cout << "==================> Autoindex is on <====================" << std::endl;
-
         if (this->_type_req_target == IS_LOCATION)
             this->ConstructResponseFile(200, "OK", autoIndexPath(this->_server_setup.getRoot(), this->_request_info.getRequest_target()));
         else if (this->_type_req_target == IS_DIRECTORY)
@@ -117,6 +111,12 @@ int                                     Response::GET(std::string& path)
 int                                     Response::POST(std::string& path)
 {   
     std::string uri = _request_info.getRequest_target();
+    //  Upload File
+    if (this->_server_setup.getUploadStore() != "")
+    {
+        this->ConstructResponseFile(200, "OK", "Succes_Upload.html");
+        this->sendResponse();
+    }
     if (this->_type_req_target == IS_FILE && isCGIFile(uri))
     {
         path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);            
@@ -151,6 +151,8 @@ void            Response::InitResponseConfig(t_location *location)
         _server_setup.request_method = location->request_method;
     if (location->autoindex.length())
          _server_setup.autoindex = location->autoindex;
+    if (location->upload_store.length())
+        _server_setup.upload_store = location->upload_store;
 }
 
 std::pair<std::string, std::string>    Response::getErrorPage(int status_code) // (pair(path, msg))

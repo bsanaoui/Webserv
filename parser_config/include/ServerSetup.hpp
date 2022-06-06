@@ -14,6 +14,7 @@ typedef struct s_location
     int                                         client_max_body_size;
     std::vector<std::string>                    request_method;
     std::string                                 autoindex;
+    std::string                                 upload_store;
 
 } t_location;
 
@@ -31,7 +32,8 @@ class ServerSetup
     std::vector<std::pair<short, std::string> > error_pages;            // error_page           404 505 /custom_404.html /custom_505.html ;
     int                                         client_max_body_size;   // client_max_body_size 1024;
     std::vector<std::string>                    request_method;         // request_method       GET POST;
-    std::string                                 autoindex;              // autoindex            off;
+    std::string                                 autoindex;              // autoindex           off;
+    std::string                                 upload_store;
     std::vector<t_location>                     locations;              // locations            location /upload {}
     char***                                     envp;
 
@@ -56,6 +58,7 @@ class ServerSetup
     std::vector<std::string>                    getRequest_method() const;        
     std::string                                 getAutoindex() const;             
     std::vector<t_location>                     getLocations() const; 
+    std::string                                 getUploadStore() const;
     char**                                      getEnvp() const;
 
     void                                        setEnvp(char*** envp);
@@ -69,7 +72,6 @@ class ServerSetup
     // ----------------- Non Member Methods -------------------- //
     // --------------------------------------------------------- //
     static t_location initLocation();
-    
 
 };
 

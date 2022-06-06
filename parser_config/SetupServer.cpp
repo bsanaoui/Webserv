@@ -13,6 +13,7 @@ ServerSetup::ServerSetup()
     this->client_max_body_size = -1;
     this->request_method =  std::vector<std::string>();
     this->autoindex = std::string();
+    this->upload_store = std::string();
     this->locations = std::vector<t_location>();
     this->envp = NULL;
 }
@@ -33,6 +34,7 @@ ServerSetup&    ServerSetup::operator=(const ServerSetup& server_setup)
     this->request_method = server_setup.request_method;
     this->autoindex = server_setup.autoindex;
     this->locations = server_setup.locations;
+    this->upload_store  = server_setup.upload_store;
     this->envp = server_setup.envp;
     return (*this);
 }
@@ -84,6 +86,11 @@ std::vector<t_location>                     ServerSetup::getLocations() const
 {
     return (this->locations);
 }
+
+std::string                                 ServerSetup::getUploadStore() const
+{
+    return (this->upload_store);
+}   
 
 char**                                      ServerSetup::getEnvp() const
 {
@@ -158,6 +165,7 @@ t_location ServerSetup::initLocation()
     location.client_max_body_size = -1;
     location.request_method =  std::vector<std::string>();
     location.autoindex = std::string();
+    location.upload_store = std::string();
     return (location);
 }
 

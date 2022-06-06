@@ -85,6 +85,8 @@ ServerSetup                 Parser::parseServer()
             server_setup.request_method = parseWords();
         else if (!curr_token.value.compare("autoindex") && !server_setup.autoindex.length())
             server_setup.autoindex = parseWord();
+        else if (!curr_token.value.compare("upload_store") && !server_setup.upload_store.length())
+            server_setup.upload_store = parseWord();
         else if (!curr_token.value.compare("location"))
         {
             server_setup.locations.push_back(parseLocation());
@@ -184,6 +186,8 @@ t_location                  Parser::parseLocation()
             location.request_method = parseWords();
         else if (!curr_token.value.compare("autoindex") && !location.autoindex.length())
             location.autoindex = parseWord();
+        else if (!curr_token.value.compare("upload_store") && !location.upload_store.length())
+            location.upload_store = parseWord();
         else
             errorDisplay("Invalid Token");
         this->eat(SEMICOLON);

@@ -20,6 +20,7 @@ class Server{
   //pair<server, possition>
   int     AcceptNewConnection(std::pair<int, size_t> pair);
   static  void handleConnection(ServerSetup server_setup, int new_socket);
+  static  std::string   receiveRequest(int new_socket);
 
 };
 
