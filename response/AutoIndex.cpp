@@ -4,9 +4,11 @@
 #include <dirent.h>
 #include <unistd.h>
 
-static void	LinkHref(std::fstream & index, struct dirent *direntp)
+static void	LinkHref(std::fstream & index, struct dirent *direntp, std::string uri)
 {
 	index << "<a href=\"";
+	if (uri.length() > 1)
+		index << uri + "/";
 	index << direntp->d_name;
 	if (direntp->d_type == DT_DIR)
 		index << "/";
@@ -15,7 +17,7 @@ static void	LinkHref(std::fstream & index, struct dirent *direntp)
 	index << "</a>";
 }
 
-std::string autoIndexPath(std::string filePath)
+std::string autoIndexPath(std::string filePath, std::string uri)
 {
 	DIR*			dirp;
 	struct dirent*	direntp;
@@ -44,7 +46,7 @@ std::string autoIndexPath(std::string filePath)
 			// 	index += "_File         => ";
 			// else
 			// 	index += "                ";
-			LinkHref(index_html, direntp);
+			LinkHref(index_html, direntp, uri);
 			index_html << "</h4>\n";
 		}
 		index_html << "</html>";

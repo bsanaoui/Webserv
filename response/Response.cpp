@@ -98,11 +98,15 @@ int                                     Response::GET(std::string& path)
     }
     else if (this->_type_req_target != IS_NOT_FOUND && this->_server_setup.getAutoindex() == "on")
     {
-        std::cout << "Autoindex" << std::endl;
+        std::cout << "==================> Autoindex is on <====================" << std::endl;
+        std::cout << "getRoot: " << this->_server_setup.getRoot() << std::endl;
+        std::cout << "getRequest_target: " << this->_request_info.getRequest_target() << std::endl;
+        std::cout << "==================> Autoindex is on <====================" << std::endl;
+
         if (this->_type_req_target == IS_LOCATION)
-            this->ConstructResponseFile(200, "OK", autoIndexPath(this->_server_setup.getRoot()));
+            this->ConstructResponseFile(200, "OK", autoIndexPath(this->_server_setup.getRoot(), this->_request_info.getRequest_target()));
         else if (this->_type_req_target == IS_DIRECTORY)
-            this->ConstructResponseFile(200, "OK", autoIndexPath(path));
+            this->ConstructResponseFile(200, "OK", autoIndexPath(path, ""));
         this->sendResponse();
         std::remove(AUTO_INDEX_PATH);
         return (1);
@@ -136,7 +140,7 @@ int                                     Response::DELETE(std::string& path)
 void            Response::InitResponseConfig(t_location *location)
 {
     if (location->path.length())
-        _server_setup.root += (location->path + location->root);
+        _server_setup.root += (location->path + location->root); // TO add "/"  if fix the problem!!
     if (!location->index.empty())
         _server_setup.index = location->index;
     if (!location->error_pages.empty())

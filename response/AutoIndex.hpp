@@ -3,6 +3,6 @@
 #include <iostream>
 
 #define AUTO_INDEX_PATH "autoIndex.html"
-std::string autoIndexPath(std::string filePath);
+std::string autoIndexPath(std::string filePath, std::string uri);
 
 #endif
