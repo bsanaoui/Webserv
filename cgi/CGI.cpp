@@ -23,7 +23,7 @@ std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server)
 	envp.push_back(strdup((std::string("PATH_INFO") + "=" + server.getRoot()
             + request.getRequest_target()).c_str()));
 	envp.push_back(strdup((std::string("GATEWAY_INTERFACE") + "=CGI/1.1").c_str()));
-
+    
 	// envp.push_back(strdup((std::string("SERVER_NAME") + "=" + server.getServer_name()[0]).c_str()));
 	// envp.push_back(strdup((std::string("SERVER_PORT") + "=" + std::to_string(server.getListen().first)).c_str()));
 	// envp.push_back(strdup((std::string("SERVER_PROTOCOL") + "=HTTP/1.1").c_str()));

@@ -2,7 +2,7 @@
 #define SERVER_HPP
 
 #include "Utils.hpp"
-
+#define LENGTH_RECV_BUFFER 2048
 class Server{
 
   std::vector<struct sockaddr_in> _v_address;
