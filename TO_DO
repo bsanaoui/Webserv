@@ -1,7 +1,7 @@
 * 1 - Autoindex
-2 - Handle chanked request
+* 2 - Handle chanked request
 * 3 - POST 
-* 4 - Delete ~~
+*- 4 - Delete ~~
 5 - Upload
 6 - Correction
 
@@ -13,6 +13,5 @@ Chanked , request:
         Std:string request; var
         int body_lenght ; const
         int readed_body ; var
-
 
     }

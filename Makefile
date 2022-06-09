@@ -1,6 +1,6 @@
 NAME = webserv
 
-SRC =  	Server.cpp  main.cpp\
+SRC =  	Server.cpp Request.cpp main.cpp\
 		parser_config/Token.cpp \
 		parser_config/Lexer.cpp \
 		parser_config/SetupServer.cpp \

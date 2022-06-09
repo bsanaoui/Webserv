@@ -32,14 +32,16 @@ void run(std::vector<ServerSetup> servers_setup)
 				if ((search_fd = find_fd(i, server.GetServerFds())).first)
 				{
 					// this is a new connection
-					int client_socket = server.AcceptNewConnection(search_fd.second);
+					int client_socket = server.acceptNewConnection(search_fd.second);
 					server_it = it_b + (search_fd.second).second;
 					FD_SET(client_socket, &CurrentSockets);
 				}
 				else
 				{
-					Server::handleConnection(*server_it, i);
-					FD_CLR(i, &CurrentSockets);
+					if (!server.isRequestExist(i))
+						server.addNewRequest(i);
+					if (server.handleConnection(*server_it, i) == true)
+						FD_CLR(i, &CurrentSockets);
 				}
 			}
 		}
