@@ -110,9 +110,9 @@ bool Server::handleConnection(ServerSetup server_setup, int new_socket)
 
 	// ----------------------- Print Request ------------------------------ //
 
-	// std::cout << "<< ================== Start Request =================== >>" << std::endl;
-	// std::cout << request << "\n" << std::endl;
-	// std::cout << "<< =================== End Request ==================== >>" << std::endl;
+	std::cout << "<< ================== Start Request =================== >>" << std::endl;
+	std::cout << request << "\n" << std::endl;
+	std::cout << "<< =================== End Request ==================== >>" << std::endl;
 
 	if (request_info.getHeaders().find("Content-Length") != request_info.getHeaders().end())
 	{
@@ -147,9 +147,9 @@ std::string Server::receiveRequest(int fd_socket)
 	{
 		valread = recv(fd_socket, buffer, LENGTH_RECV_BUFFER, 0);
 		if (valread > 0)
-			_requests[fd_socket].appandBuffer(buffer, valread);				// set content body + buffer string + set isHeaderReaded = true
-		_requests[fd_socket].setContentLength(buffer);						// set content length	
-		if (_requests[fd_socket].getContentLength() == 0)				// if the content length is 0 then the request is cmoplete
+			_requests[fd_socket].appandBuffer(buffer, valread);	// set content body + buffer string + set isHeaderReaded = true
+		_requests[fd_socket].setContentLength(buffer);			// set content length	
+		if (_requests[fd_socket].getContentLength() == 0)		// if the content length is 0 then the request is cmoplete
 			return std::string(buffer, valread);	
 	}
 	// appand the buffer

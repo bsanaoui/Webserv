@@ -114,6 +114,8 @@ int                                     Response::POST(std::string& path)
     //  Upload File
     if (this->_server_setup.getUploadStore() != "")
     {
+        if (bodyIsFile())
+            uploadFile();
         this->ConstructResponseFile(200, "OK", "Succes_Upload.html");
         this->sendResponse();
     }
@@ -244,7 +246,7 @@ void                                    Response::sendResponse()
     {
         try
         {
-            if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
+            if (this->_request_info.getHeaders()["Connection"] != "keep-alive")
                 close(this->_fd_sock_req);
         }
         catch(const std::exception& e)
@@ -342,6 +344,64 @@ std::string                             Response::getExistIndex()
     }
     return ("NOT_FOUND");
 }
+
+bool                              Response::bodyIsFile()
+{
+    std::string line;
+    std::istringstream iss(this->_request_info.getBody().substr(0, 1000)); // 1000byte expect more than 2 lines
+    std::getline(iss, line);
+    std::getline(iss, line);
+    if (line.find("filename") != std::string::npos)
+        return (true);
+    return (false);
+}
+
+int                             Response::uploadFile()
+{
+    std::string first_line;
+    std::string line;
+    std::string filename;
+    std::fstream upload_file;
+    // upload_file.open(this->_server_setup.getRoot() + this->_server_setup.getUploadStore() + , std::ios::out | std::ios::binary);
+    std::istringstream body(this->_request_info.getBody()); // 1000 byte expect more than 2 lines
+    std::getline(body, first_line);
+    first_line.append("--"); // delimenter
+
+    // Get file Name
+    std::getline(body, line);
+    filename = line.substr(line.find("filename\"") + 1, line.length() - 1);
+
+    // Create file name
+    upload_file.open(this->_server_setup.getRoot() + this->_server_setup.getUploadStore() + "/" + filename, std::ios::out | std::ios::binary);
+    
+    // skip headers of body
+    while (1)
+    {
+        std::getline(body, line);
+        if (body.eof())
+            break;
+        if (line == "\r\n")
+        {
+            std::getline(body, line);
+            if (line == "\r\n")
+                break;
+        }
+    }
+
+    // Set file content
+    while (1)
+    {
+        std::getline(body, line);
+        if (body.eof())
+            break;
+        if (line == first_line)
+            break;
+        upload_file << line;
+    }
+    if (upload_file.is_open())
+        upload_file.close();
+    return (0);
+}
 // --------------------------------------------------------- //
 // ------------------  Non Member Functions ---------------- //
 // --------------------------------------------------------- //
@@ -366,52 +426,3 @@ bool                            Response::isCGIFile(const std::string& uri)
         return (true);
     return (false);
 }
-
-
-// ----------------------------- TEST !!!!! ---------------------------------------//
-// ----------------------------- TEST !!!!! ---------------------------------------//
-// std::string  Response::test(RequestInfo request_info, ServerSetup server_setup){
-
-//     //1 -  verify any method (GET POST DELETE) //     // and exist in config file
-//     // Verifiez extention of file if exist
-//     std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: ";
-//     // Verifier root && the file if exist
-//     // Calculate Lenght of the file;
-//     if (request_info.getRequest_method() == "GET")
-//     {   
-//         std::string path;
-//         // if root
-//         if (request_info.getRequest_target() == "/about")
-//             path = server_setup.getRoot() + server_setup.getLocations()[0].path + "/" + server_setup.getLocations()[0].index[0];
-//         else // if location
-//             path = server_setup.getRoot() + "/" + server_setup.getIndex().at(0);
-        
-//         std::ifstream index_file(path);
-
-//         if (!index_file.is_open())
-//             return (0);
-    
-//         std::cout << "\n\n/<< ****************** Index Content : ********************* >>"<< std:: endl;
-//         std::string response_line;
-//         std::string body;
-//         int         size_body = 0;
-//         while (std::getline(index_file, response_line))
-//         {
-//             // std::istringstream iss(response_line);
-//             // int a, b;
-//             // if (!(iss >> a >> b)) { break; } // error
-//             body.append(response_line);
-//             size_body += response_line.length();
-//             if (!index_file.eof())
-//             {
-//                 body.append("\n");
-//                 size_body++;
-//             }
-//         }
-//         response.append(std::to_string(size_body));
-//         response.append("\r\n\r\n");
-//         response.append(body);
-//         index_file.close();
-//     }
-//     return (response);
-// }

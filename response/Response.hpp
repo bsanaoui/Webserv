@@ -63,6 +63,8 @@ public:
     int                                     GET(std::string& path);
     int                                     POST(std::string& path);
     int                                     DELETE(std::string& path);
+    int                                     uploadFile();
+    bool                                    bodyIsFile();
 
 
     // --------------------------------------------------------- //
