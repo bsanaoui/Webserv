@@ -244,15 +244,8 @@ void                                    Response::sendResponse()
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
     {
-        try
-        {
-            if (this->_request_info.getHeaders()["Connection"] != "keep-alive")
+        if (this->_request_info.getHeaders()["Connection"] != "keep-alive")
                 close(this->_fd_sock_req);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
     }
     close(this->_fd_sock_req);
 }
@@ -287,11 +280,7 @@ bool                                    Response::verifyRequest() // false if Re
         if (this->_server_setup.getRequest_method()[i] == this->_request_info.getRequest_method())
             break;
     if (this->_server_setup.getRequest_method()[i] != this->_request_info.getRequest_method())
-        return (sendErrorPage(405));
-
-    // check auto index priority
-    // Function TO DO    
-
+        return (sendErrorPage(405)); 
     // Check body size < client_max_body_size
     int max_size;
     if ((max_size = this->_server_setup.getClient_max_body_size()) != -1)
@@ -299,7 +288,6 @@ bool                                    Response::verifyRequest() // false if Re
         if ((int)this->_request_info.getBody().length() > max_size)
             return (sendErrorPage(413)); // create 413 error page
     }
-    
     return (true);
 }
 
@@ -320,16 +308,10 @@ void                                    Response::senUnxpectedError()
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
     {
-        try
-        {
-            if (this->_request_info.getHeaders().at("Connection") != "keep-alive")
+        if (this->_request_info.getHeaders()["Connection"] != "keep-alive")
             close(this->_fd_sock_req);
-        }
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
-        }
     }
+    close(this->_fd_sock_req);
 }
 
 std::string                             Response::getExistIndex()
@@ -358,13 +340,11 @@ bool                              Response::bodyIsFile()
 
 int                             Response::uploadFile()
 {
-    std::string first_line;
     std::string line;
-    std::string filename;
-    std::fstream upload_file;
     std::stringstream body(this->_request_info.getBody()); // 1000 byte expect more than 2 lines
 
     // get delimeter bondry
+    std::string first_line;
     std::getline(body, first_line);
     first_line = first_line.substr(0, first_line.length() - 1) + "--\r";
     // std::cout << first_line << std::endl;
@@ -372,10 +352,10 @@ int                             Response::uploadFile()
     // Get file Name
     std::getline(body, line);
     size_t pos = line.find("filename=\"") + 10;
-    filename = line.substr(pos, line.length() - pos - 2);
+    std::string filename = line.substr(pos, line.length() - pos - 2);
 
     // Create file name
-    upload_file.open(this->_server_setup.getRoot() + "/" + this->_server_setup.getUploadStore() + filename, std::fstream::out);
+    std::fstream upload_file(this->_server_setup.getRoot() + "/" + this->_server_setup.getUploadStore() + filename, std::fstream::out);
 
     // skip headers of body
     while (std::getline(body, line))
@@ -387,7 +367,6 @@ int                             Response::uploadFile()
                 break;
         }
     }
-
     // Set file content
     std::getline(body, line);
     std::string tmp;

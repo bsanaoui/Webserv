@@ -1,4 +1,0 @@
-HELLO
-Test
-GTX
-FIN

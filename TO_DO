@@ -1,9 +1,13 @@
 * 1 - Autoindex
 * 2 - Handle chanked request
 * 3 - POST 
-*- 4 - Delete ~~
-5 - Upload
-6 - Correction
+4 - Delete 
+* 5 - Upload
+6 - Add redirection (return 302 link)
+7 - Request server by name in cmd
+8 - Stress server
+9 - Fix debug mode of parsing/ Fix closed request
+10 - Correction
 
 
 
