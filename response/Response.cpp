@@ -362,11 +362,12 @@ int                             Response::uploadFile()
     std::string line;
     std::string filename;
     std::fstream upload_file;
-    std::istringstream body(this->_request_info.getBody()); // 1000 byte expect more than 2 lines
+    std::stringstream body(this->_request_info.getBody()); // 1000 byte expect more than 2 lines
 
     // get delimeter bondry
     std::getline(body, first_line);
-    first_line.erase(first_line.length() - 2); // remove \r
+    first_line = first_line.substr(0, first_line.length() - 1) + "--\r";
+    // std::cout << first_line << std::endl;
     
     // Get file Name
     std::getline(body, line);
@@ -389,29 +390,26 @@ int                             Response::uploadFile()
 
     // Set file content
     std::getline(body, line);
-    if (line.compare(0, first_line.length(), first_line))
-    {
-        if (line.find("\r") == line.length() - 1)
-            upload_file << line.substr(0, line.length() - 1);
-        else
-            upload_file << line;
-    }
+    std::string tmp;
+    if (line != first_line)
+        tmp.append(line);
     else
     {
+        tmp.erase(tmp.length() - 1, 1);
+        upload_file << tmp;
         upload_file.close();
         return (0);
     }
     while (std::getline(body, line))
     {
-        if (line.compare(0, first_line.length(), first_line))
-            upload_file << "\n";
+        if (line != first_line) //diff
+            tmp.append("\n");
         else
             break;
-        if (line.find("\r") == line.length() - 1)
-            upload_file << line.substr(0, line.length() - 1);
-        else
-            upload_file << line;
+        tmp.append(line);
     }
+    tmp.erase(tmp.length() - 1, 1);
+    upload_file << tmp;
     if (upload_file.is_open())
         upload_file.close();
     return (0);
