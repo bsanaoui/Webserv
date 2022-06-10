@@ -362,41 +362,55 @@ int                             Response::uploadFile()
     std::string line;
     std::string filename;
     std::fstream upload_file;
-    // upload_file.open(this->_server_setup.getRoot() + this->_server_setup.getUploadStore() + , std::ios::out | std::ios::binary);
     std::istringstream body(this->_request_info.getBody()); // 1000 byte expect more than 2 lines
-    std::getline(body, first_line);
-    first_line.append("--"); // delimenter
 
+    // get delimeter bondry
+    std::getline(body, first_line);
+    first_line.erase(first_line.length() - 2); // remove \r
+    
     // Get file Name
     std::getline(body, line);
-    filename = line.substr(line.find("filename\"") + 1, line.length() - 1);
+    size_t pos = line.find("filename=\"") + 10;
+    filename = line.substr(pos, line.length() - pos - 2);
 
     // Create file name
-    upload_file.open(this->_server_setup.getRoot() + this->_server_setup.getUploadStore() + "/" + filename, std::ios::out | std::ios::binary);
-    
+    upload_file.open(this->_server_setup.getRoot() + "/" + this->_server_setup.getUploadStore() + filename, std::fstream::out);
+
     // skip headers of body
-    while (1)
+    while (std::getline(body, line))
     {
-        std::getline(body, line);
-        if (body.eof())
-            break;
-        if (line == "\r\n")
+        if (line.find("\r") == line.length() - 1)
         {
             std::getline(body, line);
-            if (line == "\r\n")
+            if (line == "\r")
                 break;
         }
     }
 
     // Set file content
-    while (1)
+    std::getline(body, line);
+    if (line.compare(0, first_line.length(), first_line))
     {
-        std::getline(body, line);
-        if (body.eof())
+        if (line.find("\r") == line.length() - 1)
+            upload_file << line.substr(0, line.length() - 1);
+        else
+            upload_file << line;
+    }
+    else
+    {
+        upload_file.close();
+        return (0);
+    }
+    while (std::getline(body, line))
+    {
+        if (line.compare(0, first_line.length(), first_line))
+            upload_file << "\n";
+        else
             break;
-        if (line == first_line)
-            break;
-        upload_file << line;
+        if (line.find("\r") == line.length() - 1)
+            upload_file << line.substr(0, line.length() - 1);
+        else
+            upload_file << line;
     }
     if (upload_file.is_open())
         upload_file.close();
