@@ -132,6 +132,35 @@ int                                     Response::POST(std::string& path)
     return (sendErrorPage(403, "Forbidden"));
 }
 
+// int                                     Response::DELETE(std::string& path)
+// {
+//     DIR             *dir;
+//     struct dirent   *direntp;
+//     dir = opendir(path.c_str());
+//     if ( dir != NULL )
+// 	{
+//         while(1)
+//         {
+//             direntp = readdir(dir);
+//             if (direntp == NULL)
+//                 return (1);
+//             if (direntp->d_type == DT_DIR)
+//             {
+//                 if (strcmp(direntp->d_name, ".") == 0 || strcmp(direntp->d_name, "..") == 0)
+//                     continue;
+//                 std::string new_path = path + "/" + direntp->d_name + "/";
+//                 DELETE(new_path);
+//             }
+//             else if (direntp->d_type == DT_REG)
+//             {
+//                 std::string file_path = path + "/" + direntp->d_name;
+//                 std::remove(file_path.c_str());
+//             }
+//         }
+//     }
+//     return (1);
+// }
+
 int                                     Response::DELETE(std::string& path)
 {
     if (this->_type_req_target == IS_FILE && std::remove(path.c_str()) == 0)
@@ -413,7 +442,7 @@ bool                                Response::redirect()
     std::string body = "<head><meta http-equiv=\"Refresh\" content=\"0; URL="
                 + this->_server_setup.getReturn().second
                 + "\"></head>";
-    std::string response = "HTTP/1.1 301 Moved Permanently\r\n";
+    std::string response = "HTTP/1.1 302 Moved Temporarily\r\n";
     response += "Content-Type: text/html\r\n";
     response += "Content-Length: " + std::to_string(body.length()) + "\r\n\r\n";
     response += body;
