@@ -21,14 +21,8 @@ std::string autoIndexPath(std::string filePath, std::string uri)
 {
 	DIR*			dirp;
 	struct dirent*	direntp;
-	// std::string		index;
     std::fstream    index_html(AUTO_INDEX_PATH, std::ios::out);
-	// char			buffer[PATH_MAX];
-	// std::string		path;
 
-	// path = getcwd(buffer, PATH_MAX);
-	// path += "/";
-	// path += filePath;
 	dirp = opendir(filePath.c_str());
 	if ( dirp != NULL )
 	{
