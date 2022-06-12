@@ -96,23 +96,29 @@ int      isHexa(std::string str) // add to header
 void        Request::deleteDelimeter(bool begin) // true if begining,
 { 
     size_t pos = 0;
+    std::string hexa;
    // _readed_body; // minuse deleted delimeter !!!
-   if (begin == true && (pos = _buffer.find("\r\n\r\n", pos)) != std::string::npos)
+   if (begin == true && (pos = _buffer.find("\r\n\r\n")) != std::string::npos)
     {
-        std::string hexa = _buffer.substr(pos + 4, _buffer.find("\r\n", pos + 4) - pos - 4);
-
-        std::cout << "=========== Hexa ============" << std::endl;
-        std::cout << hexa << std::endl;
-        std::cout << "=========== Hexa ============" << std::endl;
-
+        hexa = _buffer.substr(pos + 4, _buffer.find("\r\n", pos + 4) - pos - 4);
         if (isHexa(hexa) != 0)
         {
             _buffer.erase(pos + 4, hexa.length() + 2);
             _readed_body -= (hexa.length() + 2);
         }
     }
-    // while ((pos = this->_buffer.find("\r\n", pos)) != std::string::npos)
+    // while (begin == true && (pos = _buffer.find("\r\n\r\n", pos + 1)) != std::string::npos)
     // {
-    //     this->_buffer.erase(this->_buffer.find("\r\n\r\n"), 4);
+    //     hexa = _buffer.substr(pos + 4, _buffer.find("\r\n", pos + 4) - pos - 4);
+    //     if (isHexa(hexa) != 0)
+    //     {
+    //         _buffer.erase(pos + 4, hexa.length() + 2);
+    //         _readed_body -= (hexa.length() + 2);
+    //     }
     // }
+    if (!begin && (pos = _buffer.find("\r\n\0r\n\r\n", pos + 1)) != std::string::npos)
+    {
+        _buffer.erase(pos ,7);
+        _readed_body -= 7;
+    }
 }
