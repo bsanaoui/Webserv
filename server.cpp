@@ -147,29 +147,23 @@ std::string Server::receiveRequest(int fd_socket)
 		valread = recv(fd_socket, buffer, LENGTH_RECV_BUFFER, 0);
 		if (valread > 0)
 			_requests[fd_socket].appandBuffer(buffer, valread);	// set content body + buffer string + set isHeaderReaded = true
-		_requests[fd_socket].setContentLength(buffer);			// set content length	
-		if (_requests[fd_socket].getContentLength() == 0)		// if the content length is 0 then the request is cmoplete
-			return std::string(buffer, valread);	
+		_requests[fd_socket].setHeaders(buffer);			// set content length + chanked
+		if (_requests[fd_socket].isChanked())
+			_requests[fd_socket].deleteDelimeter(true);
+		if (_requests[fd_socket].getContentLength() == 0)		// if the content length is 0 then the request is Complete
+			return std::string(buffer, valread);
 	}
+
 	// appand the buffer
 	while ((valread = recv(fd_socket, buffer, LENGTH_RECV_BUFFER, 0)) > 0)
 	{
 		_requests[fd_socket].appandBuffer(buffer, valread);
 		memset(buffer, 0, LENGTH_RECV_BUFFER);
 	}
+	if (_requests[fd_socket].isChanked())
+		_requests[fd_socket].deleteDelimeter(false);
 	// if Finished Request
 	if (_requests[fd_socket].getReadBody() >= _requests[fd_socket].getContentLength())
 		return (_requests[fd_socket].getBuffer());
 	return ("");
-}
-
-int getContentLength(char *buffer)
-{
-	LexerRe lexer(buffer);
-	ParserRe parser(lexer);
-	RequestInfo request_info = parser.parse();
-
-	if (request_info.getHeaders().find("Content-Length") != request_info.getHeaders().end())
-		return (stringToInt(request_info.getHeaders()["Content-Length"]));
-	return (0);
 }
