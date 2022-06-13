@@ -401,8 +401,9 @@ int                             Response::uploadFile()
     std::string filename = line.substr(pos, line.length() - pos - 2);
 
     // Create file name
-    std::fstream upload_file(this->_server_setup.getRoot() + "/" + this->_server_setup.getUploadStore() + filename, std::fstream::out);
-
+    std::fstream upload_file(this->_server_setup.getRoot()
+                            + this->_server_setup.getLocationPath() + "/" 
+                            + this->_server_setup.getUploadStore() + filename, std::fstream::out);
     // skip headers of body
     while (std::getline(body, line))
     {
