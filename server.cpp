@@ -107,11 +107,10 @@ bool Server::handleConnection(ServerSetup server_setup, int new_socket)
 	LexerRe lexer(request);
 	ParserRe parser(lexer);
 	RequestInfo request_info = parser.parse();
-	
 	// ----------------------- Print Request ------------------------------ //
 
 	// std::cout << "<< ================== Start Request =================== >>" << std::endl;
-	// std::cout << request << "\n" << std::endl;
+	// std::cout << request << std::endl;
 	// std::cout << "<< =================== End Request ==================== >>" << std::endl;
 
 	if (request_info.getHeaders().find("Content-Length") != request_info.getHeaders().end())
@@ -148,8 +147,8 @@ std::string Server::receiveRequest(int fd_socket)
 		if (valread > 0)
 			_requests[fd_socket].appandBuffer(buffer, valread);	// set content body + buffer string + set isHeaderReaded = true
 		_requests[fd_socket].setHeaders(buffer);			// set content length + chanked
-		// if (_requests[fd_socket].isChanked())
-		// 	_requests[fd_socket].deleteDelimeter(true);
+		if (_requests[fd_socket].isChanked())
+			_requests[fd_socket].deleteDelimeter(true);
 		if (_requests[fd_socket].getContentLength() == 0)		// if the content length is 0 then the request is Complete
 			return std::string(buffer, valread);
 	}
@@ -159,11 +158,11 @@ std::string Server::receiveRequest(int fd_socket)
 		_requests[fd_socket].appandBuffer(buffer, valread);
 		memset(buffer, 0, LENGTH_RECV_BUFFER);
 	}	
-	// if (_requests[fd_socket].isChanked())
-	// 	_requests[fd_socket].deleteDelimeter(false);
+	if (_requests[fd_socket].isChanked())
+		_requests[fd_socket].deleteDelimeter(true);
 	
 	// if Finished Request
-	if (_requests[fd_socket].getReadBody() >= _requests[fd_socket].getContentLength())
+	if (_requests[fd_socket].getReadBody() == _requests[fd_socket].getContentLength())
 		return (_requests[fd_socket].getBuffer());
 	return ("");
 }
