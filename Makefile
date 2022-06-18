@@ -32,5 +32,10 @@ push :
 	git commit -m "$(m)"
 	git push origin
 
+push_bonus : 
+	git add .
+	git commit -m "$(m)"
+	git push bonus
+
 test:
 	@make re && ./webserv
