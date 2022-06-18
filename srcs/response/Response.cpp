@@ -126,7 +126,7 @@ int                                     Response::POST()
         std::string path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);            
         this->ConstructResponseFile(200, "OK", path);
         this->sendResponse();
-        system("cat /dev/null > /tmp/cgi.html");
+        // system("cat /dev/null > /tmp/cgi.html");
         return (0);
     }
     return (sendErrorPage(403, "Forbidden"));
@@ -287,7 +287,8 @@ void                                    Response::sendResponse()
         n_read = this->_response_file.read(tmp_char, LENGHT_SEND_BUFFER).gcount();
         if (n_read == 0)
             break ;
-        send(this->_fd_sock_req, &tmp_char, n_read, 0);
+        if (send(this->_fd_sock_req, &tmp_char, n_read, 0) <= 0)
+            break ;
     }
     // Close the socket request if is not keep-alive
     if (this->_request_info.getHeaders().find("Connection") != this->_request_info.getHeaders().end())
