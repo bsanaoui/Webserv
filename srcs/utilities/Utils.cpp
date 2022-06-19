@@ -119,6 +119,8 @@ TypeRequestTarget   getPathType(const std::string& uri)
         else 
             return (IS_FILE); // is File
     }
+    else
+        return (IS_ERR_FILE);
     if (inFile.is_open())
         inFile.close();
     return (IS_NOT_FOUND);

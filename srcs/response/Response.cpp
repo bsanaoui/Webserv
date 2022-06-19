@@ -33,7 +33,10 @@ Response::Response(int fd_sock_req, RequestInfo request_info, ServerSetup server
                 return ;
         }
         if (location)
+        {
             InitResponseConfig(location);
+            delete location;
+        }
     }
     else
         _is_location = true;
@@ -113,15 +116,14 @@ int                                     Response::POST()
 {   
     std::string uri = _request_info.getRequest_target();
     //  Upload File
-    if (this->_server_setup.getUploadStore() != "")
+    if (this->_server_setup.getUploadStore() != "" && bodyIsFile())
     {
-        if (bodyIsFile())
-            uploadFile();
+        uploadFile();
         this->ConstructResponseFile(200, "OK", SUCCESS_PAGE_UPLOAD);
         this->sendResponse();
         return (0);
     }
-    if (this->_type_req_target == IS_FILE && isCGIFile(uri) && _server_setup.getPhpCgiPath().length() > 0)
+    if (isCGIFile(uri) && _server_setup.getPhpCgiPath().length() > 0)
     {
         std::string path = handle_cgi(_server_setup.getRoot() + uri, _request_info, _server_setup);            
         this->ConstructResponseFile(200, "OK", path);
@@ -145,7 +147,7 @@ int                                     Response::deleteFiles(std::string& path)
         {
             direntp = readdir(dir);
             if (direntp == NULL)
-                return (0);
+                return (2);
             if (direntp->d_type == DT_DIR)
             {
                 if (strcmp(direntp->d_name, ".") == 0 || strcmp(direntp->d_name, "..") == 0)
@@ -173,10 +175,17 @@ int                                     Response::DELETE()
 {
     std::string path = _server_setup.getRoot() + _request_info.getRequest_target();
 
-    if (deleteFiles(path) == -1)
+    // int j = std::remove(path.c_str());
+    // std::cout << "************* j ************ " << j << "***************"<< path.c_str() << std::endl;
+
+    int i = deleteFiles(path);
+    if (i == -1)
         return (sendErrorPage(403, "Forbidden"));
-    if (std::remove(path.c_str()) == -1)
-        return (sendErrorPage(403, "Forbidden"));
+    else if (i == 2)
+    {
+        if (std::remove(path.c_str()) == -1)
+            return (sendErrorPage(403, "Forbidden"));
+    }
     this->ConstructResponseFile(200, "OK", SUCCESS_PAGE_DELETE);
     this->sendResponse();
     return (1);
@@ -398,7 +407,10 @@ int                             Response::uploadFile()
     std::string first_line;
     std::getline(body, first_line);
     first_line = first_line.substr(0, first_line.length() - 1) + "--\r";
-    // std::cout << first_line << std::endl;
+    
+    // std::cout << "**********\n";
+    // std::cout << this-> << std::endl;
+    // std::cout << "**********\n";
     
     // Get file Name
     std::getline(body, line);
@@ -431,6 +443,7 @@ int                             Response::uploadFile()
         upload_file.close();
         return (0);
     }
+
     while (std::getline(body, line))
     {
         if (line != first_line) //diff
