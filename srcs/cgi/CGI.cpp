@@ -7,6 +7,7 @@
 #include <unistd.h> // fork, dup2, execve
 #include "../include/Utils.hpp"
 
+
 void    ft_free_envp(std::vector<const char*> v)
 {
     for (size_t i = 0; i < v.size() - 1; i++)
@@ -14,7 +15,7 @@ void    ft_free_envp(std::vector<const char*> v)
             delete v[i];
 }
 
-std::string    parseCgi(std::string out_file_path)
+std::string    parseCgi(std::string out_file_path, bool is_php)
 {
     std::string headers;
     std::ofstream body_file(PATH_BODY_CGI);
@@ -22,7 +23,7 @@ std::string    parseCgi(std::string out_file_path)
 
     std::string line;
 
-    while (std::getline(out_file, line))
+    while (is_php && std::getline(out_file, line))
     {
         if (line == "\r")
             break;
@@ -68,6 +69,9 @@ std::vector<const char*>    setEnvp(RequestInfo &request, ServerSetup &server)
 	// envp.push_back(strdup((std::string("REMOTE_ADDR") + "=127.0.0.1").c_str()));
 	// envp.push_back(strdup((std::string("REMOTE_HOST") + "=" + "localhost").c_str()));
     // envp.push_back(strdup((std::string("SCRIPT_NAME") + "=" + request.getRequest_target()).c_str()));
+    if (request.getHeaders().find("Cookie") != request.getHeaders().end())
+        envp.push_back(strdup((std::string("HTTP_COOKIE=") + request.getHeaders()["Cookie"]).c_str()));
+
     envp.push_back(NULL);
     return (envp);
 }
@@ -78,6 +82,7 @@ const std::string     handle_cgi(std::string path, RequestInfo &request, ServerS
 
     std::vector<const char*> argv;
     std::vector<const char*> envp;
+    bool                     is_php = true;
     std::string out_file = "/tmp/cgi.html";
     std::fstream in_file("/tmp/body_req.txt");
     pid_t pid;
@@ -87,7 +92,10 @@ const std::string     handle_cgi(std::string path, RequestInfo &request, ServerS
     if (isPHPFile(path))
         argv.push_back(server.getPhpCgiPath().c_str());
     else
+    {
         argv.push_back(server.getPythonCgiPath().c_str());
+        is_php = false;
+    }
     argv.push_back(path.c_str());
     argv.push_back(NULL);
 
@@ -104,7 +112,8 @@ const std::string     handle_cgi(std::string path, RequestInfo &request, ServerS
         dup2(fd_in, 0);
         dup2(fd_out, 1);
         // protect execve return "error" string
-        execve(argv[0], const_cast<char * const *>(argv.data()), const_cast<char * const *>(envp.data()));
+       if(execve(argv[0], const_cast<char * const *>(argv.data()), const_cast<char * const *>(envp.data())) == -1)
+            exit(-1);
         exit (0);
     }
     else
@@ -114,5 +123,5 @@ const std::string     handle_cgi(std::string path, RequestInfo &request, ServerS
     
     ft_free_envp(envp);
     // system("cat /dev/null > /tmp/body_req.txt");
-    return  parseCgi(out_file);
+    return  parseCgi(out_file, is_php);
 }
