@@ -116,9 +116,18 @@ int                                     Response::POST()
 {   
     std::string uri = _request_info.getRequest_target();
     //  Upload File
-    if (this->_server_setup.getUploadStore() != "" && bodyIsFile())
+    if (this->_server_setup.getUploadStore() != "")
     {
-        uploadFile();
+        if (bodyIsFile())
+            uploadFile();
+        else
+        {
+            std::ofstream fileupload(this->_server_setup.getRoot()
+                            + this->_server_setup.getLocationPath() + "/" 
+                            + this->_server_setup.getUploadStore() + "uploaded.file");
+            fileupload << _request_info.getBody();
+            fileupload.close();
+        }
         this->ConstructResponseFile(200, "OK", SUCCESS_PAGE_UPLOAD);
         this->sendResponse();
         return (0);

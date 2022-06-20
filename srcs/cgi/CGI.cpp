@@ -114,6 +114,7 @@ const std::string     handle_cgi(std::string path, RequestInfo &request, ServerS
         // protect execve return "error" string
        if(execve(argv[0], const_cast<char * const *>(argv.data()), const_cast<char * const *>(envp.data())) == -1)
             exit(-1);
+        
         exit (0);
     }
     else
